@@ -94,7 +94,7 @@ const LoginPage = () => {
                     <div className="w-full items-start justify-start">
                         <ButtonAuth text="Sign In" onPress={handleClick} />
                     </div>
-                    <TextAuth textStyle="text-red-600 hover:text-red-800 " text="Dont You Have An Account?" styling="flex items-start justify-start" direct="/create-account" />
+                    <TextAuth textStyle="text-black hover:text-black/55 " text="Dont You Have An Account?" styling="flex items-start justify-start" direct="/create-account" />
                 </div>
             </div>
         </FullScreenTsx>
