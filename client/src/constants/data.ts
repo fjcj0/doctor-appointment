@@ -15,6 +15,9 @@ export const patientIcon = '/patient_icon.svg';
 export const patientsIcon = '/patients_icon.svg';
 export const uploadAreaIcon = '/upload_area.svg';
 export const blueTick = '/blueTick.svg';
+export const closeEye = '/eye.png';
+export const openEye = '/visible.png';
+export const warningIcon = '/warning.png';
 /**/
 
 /*LINKS*/

@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "lucide-react": "^0.553.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hot-toast": "^2.6.0",
+    "react-lottie": "^1.2.10",
     "react-router": "^7.9.5",
     "react-router-dom": "^7.9.5",
     "zustand": "^5.0.8"
@@ -22,6 +24,7 @@
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
+    "@types/react-lottie": "^1.2.10",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
