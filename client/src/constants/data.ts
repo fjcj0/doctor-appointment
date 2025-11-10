@@ -18,6 +18,7 @@ export const blueTick = '/blueTick.svg';
 export const closeEye = '/eye.png';
 export const openEye = '/visible.png';
 export const warningIcon = '/warning.png';
+export const circleIcon = '/circle.png';
 /**/
 
 /*LINKS*/

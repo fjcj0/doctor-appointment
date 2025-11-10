@@ -1,0 +1,1 @@
+export type LoginStatusProp = 'doctor' | 'admin';
