@@ -11,6 +11,7 @@ import HomePage from './pages/MainPages/HomePage';
 import DoctorsPage from './pages/MainPages/DoctorsPage';
 import AboutPage from './pages/MainPages/AboutPage';
 import ContactPage from './pages/MainPages/ContactPage';
+import UserProfilePage from './pages/MainPages/UserProfilePage';
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
 };
@@ -24,6 +25,7 @@ function App() {
           <Route path='/about' element={<AboutPage />} />
           <Route path='/all-doctors' element={<DoctorsPage />} />
           <Route path='/contact' element={<ContactPage />} />
+          <Route path='/my-profile' element={<UserProfilePage />} />
         </Route>
         {/**/}
         {/*AUTH PAGES*/}
