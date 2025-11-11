@@ -14,6 +14,7 @@ export default {
         'blue': {
           '1': '#EBF0FF',
           '2': '#5B75FF',
+          '3': '#4C60C9',
         },
         'green': {
           '1': '#FCFDF9',

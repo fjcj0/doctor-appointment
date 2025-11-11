@@ -19,6 +19,7 @@ export const closeEye = '/eye.png';
 export const openEye = '/visible.png';
 export const warningIcon = '/warning.png';
 export const circleIcon = '/circle.png';
+export const arrowDownIcon = '/down-arrow.png';
 /**/
 
 /*LINKS*/
@@ -119,7 +120,7 @@ export const footerLinks = {
     },
     GET_IN_TOUCH: {
         title: 'GET IN TOUCH',
-        list: [
+        lists: [
             {
                 text: '+1-22-214-24',
             },
