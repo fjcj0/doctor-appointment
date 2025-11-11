@@ -21,6 +21,7 @@ export const warningIcon = '/warning.png';
 export const circleIcon = '/circle.png';
 export const arrowDownIcon = '/down-arrow.png';
 export const filterIcon = '/filter.svg';
+export const warnIcon = '/warn.svg';
 /**/
 
 /*LINKS*/
@@ -290,6 +291,56 @@ export const appointments = [
         status: 'cancelled',
     }
 ];
+export const userAppointments = [
+    {
+        image: '/doctors/doc1.png',
+        name: 'Dr. Sarah Johnson',
+        specail: 'Cardiologist',
+        address: '123 Medical Center, Suite 45, New York, NY',
+        date: '15 Oct 2024, 10:30 AM',
+        isCancelled: false
+    },
+    {
+        image: '/doctors/doc2.png',
+        name: 'Dr. Michael Chen',
+        specail: 'Dermatologist',
+        address: '456 Skin Care Clinic, Boston, MA',
+        date: '16 Oct 2024, 2:15 PM',
+        isCancelled: false
+    },
+    {
+        image: '/doctors/doc3.png',
+        name: 'Dr. Emily Wilson',
+        specail: 'Pediatrician',
+        address: '789 Children Hospital, Chicago, IL',
+        date: '17 Oct 2024, 11:00 AM',
+        isCancelled: true
+    },
+    {
+        image: '/doctors/doc4.png',
+        name: 'Dr. Robert Martinez',
+        specail: 'Orthopedic Surgeon',
+        address: '321 Bone & Joint Center, Los Angeles, CA',
+        date: '18 Oct 2024, 3:45 PM',
+        isCancelled: false
+    },
+    {
+        image: '/doctors/doc5.png',
+        name: 'Dr. Jennifer Lee',
+        specail: 'Neurologist',
+        address: '654 Brain & Nerve Institute, Seattle, WA',
+        date: '19 Oct 2024, 9:00 AM',
+        isCancelled: false
+    },
+    {
+        image: '/doctors/doc6.png',
+        name: 'Dr. David Brown',
+        specail: 'Ophthalmologist',
+        address: '987 Vision Care Center, Miami, FL',
+        date: '20 Oct 2024, 1:30 PM',
+        isCancelled: false
+    }
+];
 export const dates = [
     {
         day: 'MON',
@@ -346,13 +397,13 @@ export const times = [
 ];
 /**/
 /*INFORMATION*/
-export const doctorInformation = [
-    {
-        name: 'Dr. Richard James',
-        specail: 'MBBS - General physician',
-        year_experince: 4,
-        about: 'A dedicated General Physician focused on providing comprehensive primary care. Dr. James is committed to accurate diagnosis and building trusting, long-term relationships with his patients.',
-        fee: '$50',
-    }
-];
+export const doctorInformation =
+{
+    image: '/doctors/doc1.png',
+    name: 'Dr. Richard James',
+    specail: 'MBBS - General physician',
+    year_experince: 4,
+    about: 'A dedicated General Physician focused on providing comprehensive primary care. Dr. James is committed to accurate diagnosis and building trusting, long-term relationships with his patients.',
+    fee: '$50',
+};
 /**/

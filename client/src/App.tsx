@@ -12,12 +12,16 @@ import DoctorsPage from './pages/MainPages/DoctorsPage';
 import AboutPage from './pages/MainPages/AboutPage';
 import ContactPage from './pages/MainPages/ContactPage';
 import UserProfilePage from './pages/MainPages/UserProfilePage';
+import UserAppointmentsPage from './pages/MainPages/UserAppointmentsPage';
+import AppointmentPage from './pages/MainPages/AppointmentPage';
+import ListsHeaderLinks from './components/ListsHeaderLinks';
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
 };
 function App() {
   return (
     <div className='w-screen min-h-[100vh]'>
+      <ListsHeaderLinks />
       <Routes>
         {/*MAIN PAGES*/}
         <Route path='/' element={<MainLayout />}>
@@ -26,6 +30,8 @@ function App() {
           <Route path='/all-doctors' element={<DoctorsPage />} />
           <Route path='/contact' element={<ContactPage />} />
           <Route path='/my-profile' element={<UserProfilePage />} />
+          <Route path='/my-appointments' element={<UserAppointmentsPage />} />
+          <Route path='/appointment/:id' element={<AppointmentPage />} />
         </Route>
         {/**/}
         {/*AUTH PAGES*/}

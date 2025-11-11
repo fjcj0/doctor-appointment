@@ -7,7 +7,7 @@ const Footer = () => {
         <motion.footer
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, delay: 1.5 }}
+            transition={{ duration: 2.5, delay: 1.5 }}
             viewport={{ once: true }}
             className="w-full flex flex-col ">
             <div className="w-full grid grid-cols-1 gap-10 md:grid-cols-3 p-3 border-b-[0.3px]  border-black">

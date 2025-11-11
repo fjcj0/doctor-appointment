@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Card from "../../components/ui/Card";
-import { doctors, specialties } from "../../constants/data";
+import { doctors, filterIcon, specialties } from "../../constants/data";
 import { motion, AnimatePresence } from 'framer-motion';
 const DoctorsPage = () => {
     const [special, setSpecial] = useState('');
@@ -74,6 +74,7 @@ const DoctorsPage = () => {
                 onClick={() => setFilterOpen(!filterOpen)}
             >
                 Filter
+                <img src={filterIcon} className="w-5" />
             </button>
             <div className="grid grid-cols-1 md:grid-cols-9 gap-3">
                 <AnimatePresence mode="wait">
