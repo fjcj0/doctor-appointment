@@ -1,10 +1,16 @@
 import { Link } from "react-router";
 import { footerLinks, logo } from "../constants/data";
 import type { headerLinksProps } from "../global";
+import { motion } from 'framer-motion';
 const Footer = () => {
     return (
-        <footer className="w-full flex flex-col ">
-            <div className="w-full grid grid-cols-2 md:grid-cols-3 p-3 border-b-[0.3px]  border-black">
+        <motion.footer
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
+            className="w-full flex flex-col ">
+            <div className="w-full grid grid-cols-2 gap-10 md:grid-cols-3 p-3 border-b-[0.3px]  border-black">
                 <div className="flex flex-col items-start justify-start gap-y-3">
                     <img src={logo} className="w-20 bg-green-500/30 hover:bg-green-500/80 duration-300 transition-all rounded-lg" />
                     <p className="text-xs font-poppins md:max-w-[90%]">
@@ -35,7 +41,7 @@ const Footer = () => {
             <div className="flex items-center justify-center my-2 font-poppins text-xs">
                 <p>&copy; {new Date().getFullYear()} HealthCore. All rights reserved</p>
             </div>
-        </footer>
+        </motion.footer>
     );
 }
 export default Footer;

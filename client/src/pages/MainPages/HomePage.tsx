@@ -1,6 +1,15 @@
+import Doctors from "../../components/Doctors";
+import EndeSctionHome from "../../components/EndSectionHome";
+import HeaderHome from "../../components/HeaderHome";
+import Speiality from "../../components/Speciality";
 const HomePage = () => {
     return (
-        <h1 className="font-bold text-4xl">Home Page</h1>
+        <>
+            <HeaderHome />
+            <Speiality />
+            <Doctors />
+            <EndeSctionHome />
+        </>
     );
 }
 export default HomePage;

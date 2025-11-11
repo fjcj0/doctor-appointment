@@ -3,6 +3,7 @@ import { arrowDownIcon, headerLinks, userLogo } from "../constants/data";
 import type { headerLinksProps } from "../global";
 import { useState, useRef, useEffect } from "react";
 import { userLinks } from "../constants/data";
+import { motion } from 'framer-motion';
 const Header = () => {
     const isAuth = false;
     const location = useLocation();
@@ -24,7 +25,12 @@ const Header = () => {
         setIsOpen(false);
     };
     return (
-        <header className="flex items-center justify-between w-full border-b-[0.3px] border-b-black px-2 py-2">
+        <motion.header
+            initial={{ opacity: 0, y: -50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true }}
+            className="flex items-center justify-between w-full border-b-[0.3px] border-b-black px-2 py-2">
             <div className="flex items-center justify-center">
                 <img src={'/logo.png'} className="w-16" alt="Logo" />
             </div>
@@ -92,7 +98,7 @@ const Header = () => {
                     Create Account
                 </Link>
             )}
-        </header>
+        </motion.header>
     );
 };
 export default Header;
