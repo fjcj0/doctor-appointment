@@ -20,6 +20,7 @@ export const openEye = '/visible.png';
 export const warningIcon = '/warning.png';
 export const circleIcon = '/circle.png';
 export const arrowDownIcon = '/down-arrow.png';
+export const filterIcon = '/filter.svg';
 /**/
 
 /*LINKS*/
