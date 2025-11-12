@@ -1,3 +1,5 @@
+import { Book, DollarSign, User } from "lucide-react";
+
 /*IMAGES*/
 export const logo = '/logo.png';
 export const headerImage = '/backgrounds/header_img-DhAi3lLA.png';
@@ -78,7 +80,7 @@ export const adminLinks = [
     },
     {
         text: 'Doctors List',
-        icon: '/dashboard-icons/people_icon.svg',
+        icon: '/icons/icon7.png',
         direct: '/dashboard-admin/doctors-list',
     },
     {
@@ -399,6 +401,55 @@ export const times = [
     '07:30 pm',
     '08:00 pm',
     '08:30 pm'
+];
+export const dataCardDashboardDoctor = [
+    {
+        title: 'Earning',
+        icon: DollarSign,
+        value: 24.4,
+        color: 'green',
+        isMoney: true,
+    },
+    {
+        title: 'Appointments',
+        icon: Book,
+        value: 24,
+        color: 'blue',
+        isMoney: false,
+    },
+    {
+        title: 'Patients',
+        icon: User,
+        value: 3,
+        color: 'red',
+        isMoney: false,
+    }
+];
+export const bookings = [
+    {
+        image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGVvcGxlfGVufDB8fDB8fHww',
+        name: 'John Max',
+        status: 'pending',
+        Date: 'Booking on 5 Oct 2024'
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D',
+        name: 'Sarah Wilson',
+        status: 'pending',
+        Date: 'Booking on 12 Oct 2024'
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D',
+        name: 'Emma Johnson',
+        status: 'completed',
+        Date: 'Booking on 8 Oct 2024'
+    },
+    {
+        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHBlb3BsZXxlbnwwfHwwfHx8MA%3D%3D',
+        name: 'Michael Brown',
+        status: 'cancelled',
+        Date: 'Booking on 15 Oct 2024'
+    }
 ];
 /**/
 /*INFORMATION*/
