@@ -1,7 +1,9 @@
 import { filterIcon, logo } from "../constants/data";
+import useSlideStore from "../store/SlideStore";
 const HeaderDashboard = ({ typeHeader }: {
     typeHeader: 'doctor' | 'admin'
 }) => {
+    const { toggleSlide } = useSlideStore();
     return (
         <header className="sticky w-full flex justify-between items-center border-b-[1px] border-r-gray-300">
             <img src={logo} className="w-20 ml-5" />
@@ -9,7 +11,7 @@ const HeaderDashboard = ({ typeHeader }: {
                 <button type="button" className="px-8 font-nunito font-bold py-2 rounded-2xl text-black bg-purple-1 border-[0.5px] border-gray-300 hover:bg-purple-2 hover:text-white duration-300 transition-all">
                     logout
                 </button>
-                <button type="button" className="md:hidden block">
+                <button type="button" className="block" onClick={toggleSlide}>
                     <img src={filterIcon} className="w-5" alt="Menu" />
                 </button>
             </div>

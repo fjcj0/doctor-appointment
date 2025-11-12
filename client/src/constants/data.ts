@@ -80,6 +80,11 @@ export const adminLinks = [
         text: 'Doctors List',
         icon: '/dashboard-icons/people_icon.svg',
         direct: '/dashboard-admin/doctors-list',
+    },
+    {
+        text: 'Profile',
+        icon: '/dashboard-icons/people_icon.svg',
+        direct: '/dashboard-admin/profile',
     }
 ];
 export const userLinks = [

@@ -19,6 +19,12 @@ import { adminLinks, doctorLinks } from './constants/data';
 import DashboardDoctorPage from './pages/DoctorsPages/DashboardDoctorPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardAdminPage from './pages/AdminPages/DashboardAdminPage';
+import DoctorAppointmentsPage from './pages/DoctorsPages/DoctorAppointmentsPage';
+import ProfileDoctorPage from './pages/DoctorsPages/ProfileDoctorPage';
+import AdminAppointmentsPage from './pages/AdminPages/AdminAppointmentsPage';
+import AddDoctorPage from './pages/AdminPages/AddDoctorPage';
+import AdminProfilePage from './pages/AdminPages/AdminProfilePage';
+import DoctorsListPage from './pages/AdminPages/DoctorsListPage';
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
 };
@@ -47,10 +53,16 @@ function App() {
         {/*DOCTOR PAGES*/}
         <Route path='/dashboard-doctor' element={<DashboardLayout typeHeader='doctor' links={doctorLinks} />}>
           <Route index element={<DashboardDoctorPage />} />
+          <Route path='/dashboard-doctor/appointments' element={<DoctorAppointmentsPage />} />
+          <Route path='/dashboard-doctor/profile' element={<ProfileDoctorPage />} />
         </Route >
         {/**/}
         <Route path='/dashboard-admin' element={<DashboardLayout typeHeader='admin' links={adminLinks} />}>
           <Route index element={<DashboardAdminPage />} />
+          <Route path='/dashboard-admin/appointments' element={<AdminAppointmentsPage />} />
+          <Route path='/dashboard-admin/add-doctor' element={<AddDoctorPage />} />
+          <Route path='/dashboard-admin/doctors-list' element={<DoctorsListPage />} />
+          <Route path='/dashboard-admin/profile' element={<AdminProfilePage />} />
         </Route >
       </Routes>
       <Toaster />
