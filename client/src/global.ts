@@ -20,3 +20,8 @@ export interface doctorInformationProps {
     image: string;
     fee: string;
 }
+export type linksProps = {
+    text: string,
+    icon: string,
+    direct: string
+}

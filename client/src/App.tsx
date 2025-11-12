@@ -15,6 +15,10 @@ import UserProfilePage from './pages/MainPages/UserProfilePage';
 import UserAppointmentsPage from './pages/MainPages/UserAppointmentsPage';
 import AppointmentPage from './pages/MainPages/AppointmentPage';
 import ListsHeaderLinks from './components/ListsHeaderLinks';
+import { adminLinks, doctorLinks } from './constants/data';
+import DashboardDoctorPage from './pages/DoctorsPages/DashboardDoctorPage';
+import DashboardLayout from './layouts/DashboardLayout';
+import DashboardAdminPage from './pages/AdminPages/DashboardAdminPage';
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
 };
@@ -40,6 +44,14 @@ function App() {
         <Route path='/forget-password' element={<ForgetPassword />} />
         <Route path='/login-admin-or-doctor' element={<LoginDoctorOrAdminPage />} />
         {/**/}
+        {/*DOCTOR PAGES*/}
+        <Route path='/dashboard-doctor' element={<DashboardLayout typeHeader='doctor' links={doctorLinks} />}>
+          <Route index element={<DashboardDoctorPage />} />
+        </Route >
+        {/**/}
+        <Route path='/dashboard-admin' element={<DashboardLayout typeHeader='admin' links={adminLinks} />}>
+          <Route index element={<DashboardAdminPage />} />
+        </Route >
       </Routes>
       <Toaster />
     </div>
