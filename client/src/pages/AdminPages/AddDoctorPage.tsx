@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "../../components/ui/Input";
 import { Edit, Upload } from "lucide-react";
+import LoaderDashboard from "../../tools/LoaderDashboard";
 const AddDoctorPage = () => {
     const [name, setName] = useState<string>("");
     const [graduation, setGraduation] = useState<string>("");
@@ -66,6 +67,16 @@ const AddDoctorPage = () => {
         setSecondAddress("");
         setImage(null);
     };
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+    if (isLoading) {
+        return <LoaderDashboard />;
+    }
     return (
         <div className="p-5">
             <h1 className="text-3xl font-bold text-black mb-6">Add New Doctor</h1>
@@ -143,9 +154,7 @@ const AddDoctorPage = () => {
                             />
                         </div>
                         <div className="flex flex-col mt-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Specialization *
-                            </label>
+
                             <select
                                 value={specialization}
                                 onChange={(e) => setSpecialization(e.target.value)}
@@ -162,7 +171,7 @@ const AddDoctorPage = () => {
                         </div>
                         <div className="mt-4">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                About *
+                                About
                             </label>
                             <textarea
                                 placeholder="Enter doctor's background, qualifications, and expertise..."
