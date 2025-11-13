@@ -33,4 +33,9 @@ export interface AppointmentTableProps {
     date: string;
     fee: string;
     status: string;
+    doctor?: string,
+    doctorImage?: string,
+    onCancel: () => Promise<void>;
+    onConfirm?: () => Promise<void>;
+
 }

@@ -13,12 +13,18 @@ const DoctorAppointmentsPage = () => {
     if (isLoading) {
         return <LoaderDashboard />;
     }
+    const onCancel = async () => {
+        console.log('Cancelled');
+    }
+    const onConfirm = async () => {
+        console.log('Confirmed');
+    }
     return (
         <div className="p-6 font-nunito">
             <h1 className="text-xl font-bold text-gray-800 mb-6">Appointments</h1>
             <div className="overflow-x-auto">
                 <div className="min-w-[800px]">
-                    <div className="grid grid-cols-6 gap-4 py-3 px-2 bg-gray-100 rounded-t-lg font-semibold text-gray-700 border-x-[0.5px] border-gray-300 border-t-[0.5px]">
+                    <div className="grid grid-cols-7 gap-4 py-3 px-2 bg-gray-100 rounded-t-lg font-semibold text-gray-700 border-x-[0.5px] border-gray-300 border-t-[0.5px]">
                         <p>Patient</p>
                         <p>Payment</p>
                         <p className="text-center">Age</p>
@@ -37,6 +43,8 @@ const DoctorAppointmentsPage = () => {
                                 fee={appointment.Fee}
                                 status={appointment.status}
                                 date={appointment.Date}
+                                onCancel={onCancel}
+                                onConfirm={onConfirm}
                             />
                         ))}
                     </div>

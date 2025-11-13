@@ -44,6 +44,7 @@ const DashboardDoctorPage = () => {
                                 date={booking.Date}
                                 image={booking.image}
                                 status={booking.status}
+                                isAdminPage={false}
                             />
                         ))}
                     </div>

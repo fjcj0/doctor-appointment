@@ -1,4 +1,4 @@
-import { Book, DollarSign, User } from "lucide-react";
+import { Book, DollarSign, HeartPlusIcon, User } from "lucide-react";
 
 /*IMAGES*/
 export const logo = '/logo.png';
@@ -425,6 +425,29 @@ export const dataCardDashboardDoctor = [
         isMoney: false,
     }
 ];
+export const dataCardDashboardUser = [
+    {
+        title: 'Doctors',
+        icon: HeartPlusIcon,
+        value: 15,
+        color: 'green',
+        isMoney: false,
+    },
+    {
+        title: 'Appointments',
+        icon: Book,
+        value: 24,
+        color: 'blue',
+        isMoney: false,
+    },
+    {
+        title: 'Patients',
+        icon: User,
+        value: 3,
+        color: 'red',
+        isMoney: false,
+    }
+];
 export const bookings = [
     {
         image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGVvcGxlfGVufDB8fDB8fHww',
@@ -449,6 +472,86 @@ export const bookings = [
         name: 'Michael Brown',
         status: 'cancelled',
         Date: 'Booking on 15 Oct 2024'
+    }
+];
+
+export const adminAppointments = [
+    {
+        pateint: 'Ali',
+        image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGVvcGxlfGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=800',
+        payment: 'online',
+        doctor: 'Jack',
+        doctorImage: '/doctors/doc1.png',
+        age: 31,
+        Date: '5 Oct 2024, 12:00PM',
+        Fee: '$50.5',
+        status: 'pending',
+    },
+    {
+        pateint: 'Sarah Johnson',
+        image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cGVvcGxlfGVufDB8fDB8fHww',
+        payment: 'cash',
+        doctor: 'Emily',
+        doctorImage: '/doctors/doc2.png',
+        age: 28,
+        Date: '6 Oct 2024, 2:30PM',
+        Fee: '$65.0',
+        status: 'confirmed',
+    },
+    {
+        pateint: 'Michael Chen',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=800',
+        payment: 'insurance',
+        doctor: 'Robert',
+        doctorImage: '/doctors/doc3.png',
+        age: 45,
+        Date: '7 Oct 2024, 10:15AM',
+        Fee: '$120.0',
+        status: 'completed',
+    },
+    {
+        pateint: 'Emma Rodriguez',
+        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=800',
+        payment: 'online',
+        doctor: 'Lisa',
+        doctorImage: '/doctors/doc4.png',
+        age: 35,
+        Date: '8 Oct 2024, 4:45PM',
+        Fee: '$75.5',
+        status: 'cancelled',
+    },
+    {
+        pateint: 'David Wilson',
+        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=800',
+        payment: 'cash',
+        doctor: 'Jack',
+        doctorImage: '/doctors/doc1.png',
+        age: 42,
+        Date: '9 Oct 2024, 9:00AM',
+        Fee: '$55.0',
+        status: 'confirmed',
+    },
+    {
+        pateint: 'James Thompson',
+        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=800',
+        payment: 'insurance',
+        doctor: 'Robert',
+        doctorImage: '/doctors/doc3.png',
+        age: 38,
+        Date: '11 Oct 2024, 11:45AM',
+        Fee: '$95.0',
+        status: 'completed',
+    },
+    {
+        pateint: 'Olivia Brown',
+        image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=800',
+        payment: 'cash',
+        doctor: 'Lisa',
+        doctorImage: '/doctors/doc4.png',
+        age: 33,
+        Date: '12 Oct 2024, 1:30PM',
+        Fee: '$70.0',
+        status: 'confirmed',
     }
 ];
 /**/
