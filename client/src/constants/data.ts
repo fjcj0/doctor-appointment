@@ -272,7 +272,7 @@ export const appointments = [
     },
     {
         pateint: 'Sarah Johnson',
-        image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=800',
+        image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cGVvcGxlfGVufDB8fDB8fHww',
         payment: 'cash',
         age: 28,
         Date: '6 Oct 2024, 2:30PM',

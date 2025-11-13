@@ -25,3 +25,12 @@ export type linksProps = {
     icon: string,
     direct: string
 }
+export interface AppointmentTableProps {
+    patient: string;
+    image: string;
+    payment: string;
+    age: number;
+    date: string;
+    fee: string;
+    status: string;
+}
