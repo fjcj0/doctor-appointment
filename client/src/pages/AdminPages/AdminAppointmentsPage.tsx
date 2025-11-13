@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import LoaderDashboard from "../../tools/LoaderDashboard";
 import { adminAppointments } from "../../constants/data";
 import AppointmentTable from "../../components/ui/AppointmentTable";
-
 const AdminAppointmentsPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {

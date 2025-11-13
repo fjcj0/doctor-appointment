@@ -4,13 +4,17 @@ const Card = ({
     available,
     name,
     specail,
-    index
+    index,
+    isCheckAble,
+    onChnageCheck
 }: {
     image: string,
     available: boolean,
     name: string,
     specail: string,
-    index: number
+    index: number,
+    isCheckAble?: boolean,
+    onChnageCheck?: () => Promise<void>;
 }) => {
     return (
         <motion.div
@@ -44,6 +48,13 @@ const Card = ({
                 <p className="text-black/50 text-xs font-semibold">
                     {specail}
                 </p>
+                {
+                    isCheckAble !== undefined &&
+                    <label htmlFor="" className='flex items-center justify-start gap-2'>
+                        <input type='checkbox' onChange={onChnageCheck} />
+                        Available
+                    </label>
+                }
             </div>
         </motion.div>
     );
