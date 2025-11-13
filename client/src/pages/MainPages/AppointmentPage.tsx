@@ -1,7 +1,15 @@
+import { useNavigate } from "react-router";
 import BookAppointment from "../../components/BookAppointment";
 import Card from "../../components/ui/Card";
 import { doctorInformation, doctors } from "../../constants/data";
+import { useEffect } from "react";
 const AppointmentPage = () => {
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (false) {
+            navigate('/ErrorNotFound');
+        }
+    }, [navigate]);
     return (
         <section className="my-10">
             <BookAppointment

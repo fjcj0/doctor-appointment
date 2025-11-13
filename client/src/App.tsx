@@ -25,6 +25,7 @@ import AdminAppointmentsPage from './pages/AdminPages/AdminAppointmentsPage';
 import AddDoctorPage from './pages/AdminPages/AddDoctorPage';
 import AdminProfilePage from './pages/AdminPages/AdminProfilePage';
 import DoctorsListPage from './pages/AdminPages/DoctorsListPage';
+import Page404 from './components/Page404';
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
 };
@@ -64,6 +65,7 @@ function App() {
           <Route path='/dashboard-admin/doctors-list' element={<DoctorsListPage />} />
           <Route path='/dashboard-admin/profile' element={<AdminProfilePage />} />
         </Route >
+        <Route path="*" element={<Page404 />} />
       </Routes>
       <Toaster />
     </div>

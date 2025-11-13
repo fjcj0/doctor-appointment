@@ -52,7 +52,7 @@ const ProfileDoctorPage = () => {
                     <button type="button" className="relative flex items-center justify-center bg-blue-2/55 hover:bg-blue-2 rounded-xl duration-300 transition-all">
                         <img src={doctorInformation.image} />
                         <div className="absolute top-1 right-1">
-                            <Edit size={20} />
+                            <Edit size={20} color='white' />
                         </div>
                     </button>
                 </div>
