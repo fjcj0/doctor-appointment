@@ -1,6 +1,18 @@
+import { useEffect, useState } from "react";
 import AppointmentTable from "../../components/ui/AppointmentTable";
 import { appointments } from "../../constants/data";
+import LoaderDashboard from "../../tools/LoaderDashboard";
 const DoctorAppointmentsPage = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+    if (isLoading) {
+        return <LoaderDashboard />;
+    }
     return (
         <div className="p-6 font-nunito">
             <h1 className="text-xl font-bold text-gray-800 mb-6">Appointments</h1>

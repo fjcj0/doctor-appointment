@@ -1,8 +1,20 @@
+import { useState, useEffect } from "react";
 import CardDashboard from "../../components/ui/CardDashboard";
 import Table from "../../components/ui/Table";
 import { bookings, dataCardDashboardDoctor } from "../../constants/data";
 import { ListIcon } from "lucide-react";
+import LoaderDashboard from "../../tools/LoaderDashboard";
 const DashboardDoctorPage = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+    if (isLoading) {
+        return <LoaderDashboard />;
+    }
     return (
         <div className="p-5">
             <div className="grid max-w-3xl grid-cols-1 md:grid-cols-3 gap-3">
