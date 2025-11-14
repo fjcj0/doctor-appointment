@@ -9,7 +9,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import job from './config/cron.js';
 const app = express();
-if (process.env.NODE_ENV === 'production') job.start();
+if (process.env.NODE_ENV !== 'development') job.start();
 app.use(express.json());
 app.use(cors({
     origin: process.env.NODE_ENV === 'development'
