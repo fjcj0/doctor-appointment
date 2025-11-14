@@ -1,8 +1,8 @@
 import { request, response } from 'express';
 import { User } from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
-import crypto from 'crypto';
 import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
+import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from '../mail/emails.js';
 export const checkUserAuth = async (request, response) => {
     try {
         const user = await User.findById(request.userId).select('-password');
@@ -45,7 +45,7 @@ export const createUserAccount = async (request, response) => {
         });
         await user.save();
         generateTokenAndSetCookie(response, user._id, 'user');
-        /*Send Verification Code Later!!*/
+        await sendVerificationEmail(email, verificationToken);
         return response.status(201).json({
             success: true,
             message: `Check your email ${email} to enter the verification code!!`
@@ -81,7 +81,7 @@ export const userLogin = async (request, response) => {
             user.verificationToken = verificationToken;
             user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
             await user.save();
-            /*Send Verification Code Later!!*/
+            await sendVerificationEmail(email, verificationToken);
             return response.status(200).json({
                 success: true,
                 message: `Verify code sent to email ${email}`
@@ -167,7 +167,7 @@ export const verifyEmail = async (request, response) => {
         user.verificationTokenExpiresAt = undefined;
         user.verificationToken = undefined;
         await user.save();
-        /*Send welcome Email Later*/
+        await sendWelcomeEmail(user.email, user.name);
         return response.status(200).json({
             success: true,
             message: `Welcome ${user.name}`,
@@ -192,12 +192,12 @@ export const forgotPassword = async (request, response) => {
             success: false,
             error: 'User is not exist'
         });
-        const resetToken = crypto.randomBytes(20).toString('hex');
+        const resetToken = Math.floor(1000 + Math.random() * 9000).toString();
         const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpiresAt = resetTokenExpiresAt;
         await user.save();
-        {/*send code later to email*/ }
+        await sendPasswordResetEmail(email, resetToken);
         return response.status(200).json({
             success: true,
             message: `Code sent successfully to your email ${email}`
@@ -228,7 +228,7 @@ export const resetPassword = async (request, response) => {
         user.resetPasswordExpiresAt = undefined;
         user.resetPasswordToken = undefined;
         await user.save();
-        {/*send email reset has been succeeded later*/ }
+        await sendResetSuccessEmail(user.email);
         return response.status(200).json(
             {
                 success: true,

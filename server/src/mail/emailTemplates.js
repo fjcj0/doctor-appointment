@@ -64,7 +64,6 @@ export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
 </body>
 </html>
 `;
-
 export const PASSWORD_RESET_REQUEST_TEMPLATE = `
 <!DOCTYPE html>
 <html lang="en">
@@ -107,7 +106,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
     <h1 style="color: white; margin: 0;">Welcome to Our App!</h1>
   </div>
   <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <p>Hello {username},</p>
+    <p>Hello {name},</p>
     <p>We're excited to have you join our community!</p>
     <p>With your new account, you can now enjoy all the features we offer:</p>
     <ul>
