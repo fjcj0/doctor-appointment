@@ -8,6 +8,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import job from './config/cron.js';
+import authRoute from './routes/user-auth.route.js';
 const app = express();
 if (process.env.NODE_ENV !== 'development') job.start();
 app.use(express.json());
@@ -48,10 +49,10 @@ app.get('/cron', (request, response) => {
         message: 'Server connected successfully!!'
     });
 });
+app.use('/api/user-auth', authRoute);
 const server = createServer(app);
 connectDB().then(() => {
     server.listen(process.env.PORT, () => {
-        console.log(chalk.red('⚡'), chalk.green.bold(`MongoDb connected successfully`));
         console.log(chalk.green('✓'), chalk.blueBright.bold(`Server running at: http://localhost:${process.env.PORT}`));
         console.log(chalk.yellow('★'), chalk.cyan(process.env.NODE_ENV == 'development' ? 'Ready for development' : 'Ready for using'));
     });
