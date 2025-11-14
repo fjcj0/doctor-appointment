@@ -22,13 +22,9 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    addressOne: {
+    address: {
         type: String,
-        required: true,
-    },
-    addressTwo: {
-        type: String,
-        required: true,
+        default: null,
     },
     profilePicture: {
         type: String,

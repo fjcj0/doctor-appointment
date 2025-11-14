@@ -7,7 +7,9 @@ import ButtonAuth from "../../components/ui/ButtonAuth";
 import TextAuth from "../../components/TextAuth";
 import { warningIcon } from "../../constants/data";
 import LoaderPage from "../../components/LoaderPage";
+import VerificationCode from "./VerificationCode";
 const CreateAccountPage = () => {
+    const [pendingVerification, setPendingVerification] = useState<boolean>(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
@@ -23,6 +25,15 @@ const CreateAccountPage = () => {
         }, 3000);
         return () => clearTimeout(timer);
     }, []);
+    useEffect(() => {
+        if (pendingVerification === false) {
+            setIsLoadingPage(true);
+            const timer = setTimeout(() => {
+                setIsLoadingPage(false);
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [pendingVerification]);
     const validateEmail = (email: string): boolean => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
@@ -60,6 +71,7 @@ const CreateAccountPage = () => {
         }
         if (!hasError) {
             console.log('Account creation successful', { name, gender, email, password });
+            setPendingVerification(true);
         }
     };
     const handleEmailChange = (value: string) => {
@@ -93,8 +105,15 @@ const CreateAccountPage = () => {
         }
     };
     if (isLoadingPage) {
+        return <LoaderPage />;
+    }
+    if (pendingVerification) {
         return (
-            <LoaderPage />
+            <VerificationCode
+                email={email}
+                setPendingVerification={setPendingVerification}
+                isResetPassword={false}
+            />
         );
     }
     return (

@@ -38,13 +38,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
     },
-    addressOne: {
-        type: string,
-        default: null
-    },
-    addressTwo: {
-        type: string,
-        default: null
+    address: {
+        type: String,
+        default: null,
     },
     resetPasswordToken: {
         type: String,

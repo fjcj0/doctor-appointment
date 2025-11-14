@@ -56,6 +56,7 @@ const ForgetPassword = () => {
             <VerificationCode
                 email={email}
                 setPendingVerification={setPendingVerification}
+                isResetPassword={true}
             />
         );
     }

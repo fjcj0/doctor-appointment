@@ -5,10 +5,13 @@ import FullScreenTsx from "../../tools/FullScreenTsx";
 import ButtonAuth from "../../components/ui/ButtonAuth";
 import { ArrowLeft } from "lucide-react";
 import LoaderPage from "../../components/LoaderPage";
-const VerificationCode = ({ email, setPendingVerification }: {
+import { useNavigate } from "react-router";
+const VerificationCode = ({ email, setPendingVerification, isResetPassword }: {
     email: string;
     setPendingVerification: (value: boolean) => void;
+    isResetPassword: boolean;
 }) => {
+    const navigate = useNavigate();
     const [code, setCode] = useState('');
     const [errorCode, setErrorCode] = useState('');
     const [isLoadingPage, setIsLoadingPage] = useState<boolean>(true);
@@ -33,10 +36,15 @@ const VerificationCode = ({ email, setPendingVerification }: {
             setErrorCode('Code must be exactly 6 digits');
             return;
         }
+        if (isResetPassword == true) {
+            navigate(`/reset-password/${code}`);
+        }
+        else {
+            navigate(`/`);
+        }
         console.log(`Code is true!!`);
     };
     const handleBackToForgetPassword = () => {
-        setIsLoadingPage(true);
         setPendingVerification(false);
     };
     if (isLoadingPage) {
@@ -65,7 +73,9 @@ const VerificationCode = ({ email, setPendingVerification }: {
                         className="flex items-center justify-center gap-x-[1px]"
                     >
                         <ArrowLeft size={18} />
-                        <p className="text-black font-bold text-xs font-poppins border-b border-transparent hover:border-b-black duration-300 transition-all">Back to forget password</p>
+                        <p className="text-black font-bold text-xs font-poppins border-b border-transparent hover:border-b-black duration-300 transition-all">
+                            {isResetPassword ? 'Back to forget password page' : 'Back to login page or create account page'}
+                        </p>
                     </button>
                 </div>
             </div>

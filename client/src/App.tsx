@@ -26,6 +26,7 @@ import AddDoctorPage from './pages/AdminPages/AddDoctorPage';
 import AdminProfilePage from './pages/AdminPages/AdminProfilePage';
 import DoctorsListPage from './pages/AdminPages/DoctorsListPage';
 import Page404 from './components/Page404';
+import RestPasswordPage from './pages/AuthPages/RestPasswordPage';
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
 };
@@ -50,6 +51,7 @@ function App() {
         <Route path='/create-account' element={<CreateAccountPage />} />
         <Route path='/forget-password' element={<ForgetPassword />} />
         <Route path='/login-admin-or-doctor' element={<LoginDoctorOrAdminPage />} />
+        <Route path='/reset-password/:code' element={<RestPasswordPage />} />
         {/**/}
         {/*DOCTOR PAGES*/}
         <Route path='/dashboard-doctor' element={<DashboardLayout typeHeader='doctor' links={doctorLinks} />}>
