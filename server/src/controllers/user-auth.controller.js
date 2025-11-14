@@ -3,6 +3,7 @@ import { User } from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
 import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from '../mail/emails.js';
+import { isEmailExist } from '../utils/isEmailExist.js';
 export const checkUserAuth = async (request, response) => {
     try {
         const user = await User.findById(request.userId).select('-password');
@@ -27,10 +28,7 @@ export const createUserAccount = async (request, response) => {
                 error: 'All fields are required!!'
             });
         }
-        const isUserExist = await User.findOne({
-            email
-        });
-        if (isUserExist) return response.status(400).json({
+        if (isEmailExist(email)) return response.status(400).json({
             error: 'Email is already used try another one!!'
         });
         const hashedPassword = await bcryptjs.hash(password, 10);
@@ -122,9 +120,9 @@ export const updateUser = async (request, response) => {
         }
         const user = await User.findById(request.userId);
         if (!user) {
-            return response.status(401).json({
+            return response.status(404).json({
                 success: false,
-                error: 'Unauthorized invalid user'
+                error: 'User not found'
             });
         }
         user.name = name;

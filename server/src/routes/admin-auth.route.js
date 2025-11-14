@@ -1,0 +1,10 @@
+import express from 'express';
+import { checkAdminAuth, createAdminAccount, loginAdmin, logoutAdmin, updateAdmin } from '../controllers/admin-auth.controller.js';
+import { verifyToken } from '../middleware/verifyToken.js';
+const route = express.Router();
+route.post('/create-admin-account', createAdminAccount);
+route.post('/login-admin', loginAdmin);
+route.get('/check-admin-auth', verifyToken('admin'), checkAdminAuth);
+route.put('/update-admin', verifyToken('admin'), updateAdmin);
+route.post('/logout-admin', verifyToken('admin'), logoutAdmin);
+export default route;
