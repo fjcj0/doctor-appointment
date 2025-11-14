@@ -242,7 +242,7 @@ export const resetPassword = async (request, response) => {
         });
     }
 }
-export const logout = async (request, response) => {
+export const logoutUser = async (request, response) => {
     try {
         response.clearCookie('user_token');
         response.status(200).json({

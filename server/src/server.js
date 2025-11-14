@@ -9,7 +9,11 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import job from './config/cron.js';
 import authRoute from './routes/user-auth.route.js';
+import cookieParser from 'cookie-parser';
+import { uploadImage } from "./lib/uploadImage.js";
+import upload from "./config/multer.js";
 const app = express();
+app.use(cookieParser());
 if (process.env.NODE_ENV !== 'development') job.start();
 app.use(express.json());
 app.use(cors({
@@ -49,6 +53,7 @@ app.get('/cron', (request, response) => {
         message: 'Server connected successfully!!'
     });
 });
+app.post('/upload-image', upload.single('image'), uploadImage);
 app.use('/api/user-auth', authRoute);
 const server = createServer(app);
 connectDB().then(() => {

@@ -8,8 +8,11 @@ export const uploadImage = async (request, response) => {
                 message: 'No image file provided'
             });
         }
-        const result = await cloudinary.uploader.upload(request.file.path, {
+        const b64 = Buffer.from(request.file.buffer).toString('base64');
+        const dataURI = `data:${request.file.mimetype};base64,${b64}`;
+        const result = await cloudinary.uploader.upload(dataURI, {
             folder: 'uploads',
+            resource_type: 'auto'
         });
         return response.status(200).json({
             success: true,
