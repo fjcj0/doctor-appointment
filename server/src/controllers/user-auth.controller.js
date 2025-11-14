@@ -28,7 +28,9 @@ export const createUserAccount = async (request, response) => {
                 error: 'All fields are required!!'
             });
         }
-        if (isEmailExist(email)) return response.status(400).json({
+        const emailExists = await isEmailExist(email);
+        if (emailExists) return response.status(405).json({
+            success: false,
             error: 'Email is already used try another one!!'
         });
         const hashedPassword = await bcryptjs.hash(password, 10);

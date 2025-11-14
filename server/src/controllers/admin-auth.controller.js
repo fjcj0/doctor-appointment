@@ -29,7 +29,7 @@ export const createAdminAccount = async (request, response) => {
         }
         const emailExists = await isEmailExist(email);
         if (emailExists) {
-            return response.status(400).json({
+            return response.status(405).json({
                 success: false,
                 error: 'Email is already used try another one!!'
             });

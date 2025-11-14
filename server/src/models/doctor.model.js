@@ -18,13 +18,13 @@ const doctorSchema = new mongoose.Schema({
         required: true,
         enum: ['General Physician', 'Cardiologist', 'Neurologist', 'Pediatrician', 'Orthopedic Surgeon', 'Dermatologist'],
     },
-    Degree: {
+    degree: {
         type: String,
         required: true,
     },
     address: {
         type: String,
-        default: null,
+        required: true
     },
     profilePicture: {
         type: String,
@@ -42,6 +42,10 @@ const doctorSchema = new mongoose.Schema({
     about: {
         type: String,
         required: true,
+    },
+    available: {
+        type: Boolean,
+        default: true
     },
     lastLogin: {
         type: Date,
