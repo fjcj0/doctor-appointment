@@ -68,7 +68,7 @@ export const createDoctorAccount = async (request, response) => {
         console.log("Internal Server Error: ", error instanceof Error ? error.message : error);
         return response.status(500).json({
             success: false,
-            error: 'Internal server error'
+            error: `Internal server error ${error instanceof Error ? error.message : error}`
         });
     }
 }
@@ -141,6 +141,21 @@ export const updateDoctor = async (request, response) => {
                 ...doctor._doc,
                 password: undefined
             }
+        });
+    } catch (error) {
+        console.log("Internal Server Error: ", error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: 'Internal server error'
+        });
+    }
+}
+export const logoutDoctor = async (request, response) => {
+    try {
+        response.clearCookie('doctor_token');
+        return response.status(200).json({
+            success: true,
+            message: 'You have been logged out successfully!!'
         });
     } catch (error) {
         console.log("Internal Server Error: ", error instanceof Error ? error.message : error);

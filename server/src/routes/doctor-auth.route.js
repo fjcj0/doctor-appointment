@@ -1,0 +1,10 @@
+import express from 'express';
+import { checkAuthDoctor, createDoctorAccount, loginDoctor, logoutDoctor, updateDoctor } from '../controllers/doctor-auth.controller.js';
+import { verifyToken } from '../middleware/verifyToken.js';
+const route = express.Router();
+route.post('/create-doctor-account', verifyToken('admin'), createDoctorAccount);
+route.post('/login-doctor', loginDoctor);
+route.get('/check-doctor-auth', verifyToken('doctor'), checkAuthDoctor);
+route.put('/update-doctor', verifyToken('doctor'), updateDoctor);
+route.post('/logout-doctor', verifyToken('doctor'), logoutDoctor);
+export default route;

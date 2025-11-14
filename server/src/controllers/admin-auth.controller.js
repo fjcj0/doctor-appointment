@@ -136,7 +136,6 @@ export const updateAdmin = async (request, response) => {
         });
     }
 }
-
 export const logoutAdmin = async (request, response) => {
     try {
         response.clearCookie('admin_token');
