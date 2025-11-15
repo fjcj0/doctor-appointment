@@ -41,7 +41,7 @@ const Doctors = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.5, delay: 1 }}
                 viewport={{ once: true }}
-                href='/' className='font-nunito underline text-lg font-bold mt-2'>
+                href='/all-doctors' className='font-nunito underline text-lg font-bold mt-2'>
                 More
             </motion.a>
         </div>

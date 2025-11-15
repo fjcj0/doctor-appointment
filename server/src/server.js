@@ -14,6 +14,7 @@ import doctorRoute from './routes/doctor-auth.route.js';
 import cookieParser from 'cookie-parser';
 import { uploadImage } from "./lib/uploadImage.js";
 import upload from "./config/multer.js";
+import mainRoute from './routes/main.route.js';
 const app = express();
 app.use(cookieParser());
 if (process.env.NODE_ENV !== 'development') job.start();
@@ -59,6 +60,7 @@ app.post('/upload-image', upload.single('image'), uploadImage);
 app.use('/api/user-auth', authRoute);
 app.use('/api/admin-auth', adminRoute);
 app.use('/api/doctor-auth', doctorRoute);
+app.use(mainRoute);
 const server = createServer(app);
 connectDB().then(() => {
     server.listen(process.env.PORT, () => {

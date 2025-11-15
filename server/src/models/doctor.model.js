@@ -51,5 +51,9 @@ const doctorSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    earning: {
+        type: Number,
+        default: 0
+    },
 }, { timestamps: true });
 export const Doctor = mongoose.model('Doctor', doctorSchema);
