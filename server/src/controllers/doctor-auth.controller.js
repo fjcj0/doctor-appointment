@@ -4,6 +4,7 @@ import { Doctor } from "../models/doctor.model.js";
 import { isEmailExist } from "../utils/isEmailExist.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { Admin } from "../models/admin.model.js";
+import { removeCache } from "../utils/RemoveCache.js";
 export const checkAuthDoctor = async (request, response) => {
     try {
         const doctor = await Doctor.findById(request.doctorId).select('-password');
@@ -42,6 +43,8 @@ export const createDoctorAccount = async (request, response) => {
                 error: 'This email has been used try another'
             });
         }
+        await removeCache('doctors_limiting');
+        await removeCache('doctors');
         const hashedPassword = await bcryptjs.hash(password, 10);
         const doctor = new Doctor({
             name,
@@ -124,6 +127,8 @@ export const updateDoctor = async (request, response) => {
                 error: 'Doctor not found!!'
             });
         }
+        await removeCache('doctors_limiting');
+        await removeCache('doctors');
         if (name) doctor.name = name;
         if (speciality) doctor.speciality = speciality;
         if (degree) doctor.degree = degree;
