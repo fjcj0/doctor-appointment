@@ -1,6 +1,8 @@
 import { response, request } from "express";
 import { Appointment } from "../models/appointment.model.js";
 import { Doctor } from "../models/doctor.model.js";
+import { cache } from "../config/cache.js";
+import { removeCache } from "../utils/RemoveCache.js";
 /* For User */
 export const createAppointment = async (request, response) => {
     try {
@@ -31,6 +33,9 @@ export const createAppointment = async (request, response) => {
             fees
         });
         await appointment.save();
+        await removeCache(`appointments-user-${request.userId}`);
+        await removeCache(`appointments-doctors-${doctorId}`);
+        await removeCache(`latest-appointments-doctors-${doctorId}`);
         return response.status(201).json({
             success: true,
             message: 'Appointment has been created successfully!!',
@@ -83,6 +88,9 @@ export const userCancelAppointment = async (request, response) => {
         }
         appointment.status = 'cancelled';
         await appointment.save();
+        await removeCache(`appointments-user-${request.userId}`);
+        await removeCache(`appointments-doctors-${appointment.doctorId}`);
+        await removeCache(`latest-appointments-doctors-${appointment.doctorId}`);
         return response.status(200).json({
             success: true,
             message: 'Appointment cancelled successfully!!',
@@ -145,6 +153,9 @@ export const payOnline = async (request, response) => {
         appointment.status = 'completed';
         appointment.payment = 'online';
         await appointment.save();
+        await removeCache(`appointments-user-${request.userId}`);
+        await removeCache(`appointments-doctors-${doctorId}`);
+        await removeCache(`latest-appointments-doctors-${doctorId}`);
         return response.status(200).json({
             success: true,
             message: 'Payment completed successfully',
@@ -166,12 +177,19 @@ export const userAppointments = async (request, response) => {
                 error: 'You need to login'
             });
         }
-
-        const userAppointments = await Appointment.find({ userId: request.userId })
-            .populate('doctorId', ['name', 'speciality', 'address', 'profilePicture'])
-            .select(['_id', 'doctorId', 'date', 'fees', 'status', 'payment', 'createdAt'])
-            .sort({ createdAt: -1 });
-
+        const cacheKey = `appointments-user-${request.userId}`;
+        let userAppointments = cache.get(cacheKey);
+        if (!userAppointments) {
+            userAppointments = await Appointment.find({ userId: request.userId })
+                .populate('doctorId', ['name', 'speciality', 'address', 'profilePicture'])
+                .select(['_id', 'doctorId', 'date', 'fees', 'status', 'payment', 'createdAt'])
+                .sort({ createdAt: -1 });
+            cache.set(cacheKey, userAppointments, 300);
+            return response.status(200).json({
+                success: true,
+                userAppointments
+            });
+        }
         return response.status(200).json({
             success: true,
             userAppointments
@@ -242,14 +260,20 @@ export const latestDoctorAppointments = async (request, response) => {
                 error: 'Access denied. Doctors only.'
             });
         }
-        const doctorAppointmentsLimited = await Appointment.find({ doctorId: request.doctorId })
-            .populate({
-                path: 'userId',
-                select: 'name profilePicture'
-            })
-            .select(['_id', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
-            .sort({ createdAt: -1 })
-            .limit(10);
+        const cacheKey = `latest-appointments-doctors-${request.doctorId}`;
+        let doctorAppointmentsLimited = cache.get(cacheKey);
+        if (!doctorAppointmentsLimited) {
+            doctorAppointmentsLimited = await Appointment.find({ doctorId: request.doctorId })
+                .populate({
+                    path: 'userId',
+                    select: 'name profilePicture'
+                })
+                .select(['_id', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
+                .sort({ createdAt: -1 })
+                .limit(10);
+
+            cache.set(cacheKey, doctorAppointmentsLimited, 300);
+        }
         return response.status(200).json({
             success: true,
             doctorAppointmentsLimited
@@ -270,14 +294,19 @@ export const doctorAppointments = async (request, response) => {
                 error: 'Access denied. Doctors only.'
             });
         }
-        const doctorAppointments = await Appointment.find({ doctorId: request.doctorId })
-            .populate({
-                path: 'userId',
-                select: 'name profilePicture'
-            })
-            .select(['_id', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
-            .sort({ createdAt: -1 });
+        const cacheKey = `appointments-doctors-${request.doctorId}`;
+        let doctorAppointments = cache.get(cacheKey);
+        if (!doctorAppointments) {
+            doctorAppointments = await Appointment.find({ doctorId: request.doctorId })
+                .populate({
+                    path: 'userId',
+                    select: 'name profilePicture'
+                })
+                .select(['_id', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
+                .sort({ createdAt: -1 });
 
+            cache.set(cacheKey, doctorAppointments, 300);
+        }
         return response.status(200).json({
             success: true,
             doctorAppointments
@@ -340,6 +369,9 @@ export const doctorAcceptAppointment = async (request, response) => {
         }
         appointment.status = 'completed';
         await appointment.save();
+        await removeCache(`appointments-user-${appointment.userId}`);
+        await removeCache(`appointments-doctors-${request.doctorId}`);
+        await removeCache(`latest-appointments-doctors-${request.doctorId}`);
         return response.status(200).json({
             success: true,
             message: 'Appointment accepted successfully',
@@ -392,6 +424,9 @@ export const doctorCancelAppointment = async (request, response) => {
         }
         appointment.status = 'cancelled';
         await appointment.save();
+        await removeCache(`appointments-user-${appointment.userId}`);
+        await removeCache(`appointments-doctors-${request.doctorId}`);
+        await removeCache(`latest-appointments-doctors-${request.doctorId}`);
         return response.status(200).json({
             success: true,
             message: 'Appointment has been cancelled successfully',
@@ -438,7 +473,7 @@ export const totalAppointments = async (request, response) => {
         }
         const totalAllAppointments = await Appointment.countDocuments();
         return response.status(200).json({
-            success: false,
+            success: true,
             totalAllAppointments
         });
     } catch (error) {
@@ -478,19 +513,24 @@ export const latestAppointmentsForDoctors = async (request, response) => {
                 error: 'Access denied. Admins only.'
             });
         }
-        const appointmentsLimited = await Appointment.find({})
-            .populate({
-                path: 'doctorId',
-                select: 'name profilePicture'
-            })
-            .populate({
-                path: 'userId',
-                select: 'name profilePicture'
-            })
-            .select(['_id', 'doctorId', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
-            .sort({ createdAt: -1 })
-            .limit(10);
+        const cacheKey = 'latest-appointments-admin';
+        let appointmentsLimited = cache.get(cacheKey);
+        if (!appointmentsLimited) {
+            appointmentsLimited = await Appointment.find({})
+                .populate({
+                    path: 'doctorId',
+                    select: 'name profilePicture'
+                })
+                .populate({
+                    path: 'userId',
+                    select: 'name profilePicture'
+                })
+                .select(['_id', 'doctorId', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
+                .sort({ createdAt: -1 })
+                .limit(10);
 
+            cache.set(cacheKey, appointmentsLimited, 300);
+        }
         return response.status(200).json({
             success: true,
             appointmentsLimited
@@ -511,17 +551,22 @@ export const appointments = async (request, response) => {
                 error: 'Access denied. Admins only.'
             });
         }
-        const allAppointments = await Appointment.find({})
-            .populate([{
-                path: 'userId',
-                select: 'name profilePicture'
-            }, {
-                path: 'doctorId',
-                select: 'name profilePicture speciality'
-            }])
-            .select(['_id', 'userId', 'doctorId', 'payment', 'date', 'fees', 'status', 'createdAt'])
-            .sort({ createdAt: -1 });
+        const cacheKey = 'all-appointments-admin';
+        let allAppointments = cache.get(cacheKey);
+        if (!allAppointments) {
+            allAppointments = await Appointment.find({})
+                .populate([{
+                    path: 'userId',
+                    select: 'name profilePicture'
+                }, {
+                    path: 'doctorId',
+                    select: 'name profilePicture speciality'
+                }])
+                .select(['_id', 'userId', 'doctorId', 'payment', 'date', 'fees', 'status', 'createdAt'])
+                .sort({ createdAt: -1 });
 
+            cache.set(cacheKey, allAppointments, 300);
+        }
         return response.status(200).json({
             success: true,
             allAppointments
@@ -570,6 +615,11 @@ export const cancelAppointmentForDoctorAndUser = async (request, response) => {
         }
         appointment.status = 'cancelled';
         await appointment.save();
+        removeCache(`appointments-user-${appointment.userId}`);
+        removeCache(`appointments-doctors-${appointment.doctorId}`);
+        removeCache(`latest-appointments-doctors-${appointment.doctorId}`);
+        removeCache('latest-appointments-admin');
+        removeCache('all-appointments-admin');
         return response.status(200).json({
             success: true,
             message: 'Appointment cancelled successfully by admin',
