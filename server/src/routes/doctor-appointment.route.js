@@ -1,0 +1,11 @@
+import express from 'express';
+import { doctorAcceptAppointment, doctorAppointments, doctorCancelAppointment, latestDoctorAppointments, totalAppointMentsDoctor, totalPatientsForDoctor } from '../controllers/appointment.controller.js';
+import { verifyToken } from '../middleware/verifyToken.js';
+const route = express.Router();
+route.get('/total-appointment-doctor', verifyToken('doctor'), totalAppointMentsDoctor);
+route.get('/total-patient-doctor', verifyToken('doctor'), totalPatientsForDoctor);
+route.get('/latest-doctor-appointment', verifyToken('doctor'), latestDoctorAppointments);
+route.get('/doctor-appointment', verifyToken('doctor'), doctorAppointments);
+route.post('/doctor-accept-appointment', verifyToken('doctor'), doctorAcceptAppointment);
+route.post('/doctor-cancel-appointment', verifyToken('doctor'), doctorCancelAppointment);
+export default route;

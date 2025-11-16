@@ -215,7 +215,6 @@ export const totalAppointMentsDoctor = async (request, response) => {
         const totalAppointmentsForDoctor = await Appointment.countDocuments({
             doctorId: request.doctorId
         });
-
         return response.status(200).json({
             success: true,
             totalAppointmentsForDoctor
