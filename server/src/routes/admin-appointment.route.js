@@ -1,5 +1,5 @@
 import express from 'express';
-import { appointments, cancelAppointmentForDoctorAndUser, latestAppointmentsForDoctors, totalAppointments, totalDoctors, totalPatients } from '../controllers/appointment.controller.js';
+import { appointments, cancelAppointmentForDoctorAndUser, changeAvailable, latestAppointmentsForDoctors, totalAppointments, totalDoctors, totalPatients } from '../controllers/appointment.controller.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 const route = express.Router();
 route.get('/admin-total-doctor', verifyToken('admin'), totalDoctors);
@@ -8,4 +8,5 @@ route.get('/admin-total-patient', verifyToken('admin'), totalPatients);
 route.get('/admin-latest-appointment', verifyToken('admin'), latestAppointmentsForDoctors);
 route.get('/admin-appointment', verifyToken('admin'), appointments);
 route.post('/admin-cancel-appointment', verifyToken('admin'), cancelAppointmentForDoctorAndUser);
+route.put('/admin-change-doctor-available', verifyToken('admin'), changeAvailable);
 export default route;

@@ -439,6 +439,35 @@ export const doctorCancelAppointment = async (request, response) => {
         });
     }
 }
+export const doctorChangeAvailable = async (request, response) => {
+    try {
+        if (!request.doctorId) {
+            return response.status(405).json({
+                success: false,
+                error: 'Method not allowed this is for doctor only'
+            });
+        }
+        const doctor = await Doctor.findById(request.doctorId);
+        if (!doctor) {
+            return response.status(404).json({
+                success: false,
+                error: 'Doctor not found'
+            });
+        }
+        doctor.available = !doctor.available;
+        doctor.save();
+        return response.status(200).json({
+            success: false,
+            message: `Doctor status changed to ${doctor.available}`
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: `Internal Server Errror: ${error instanceof Error ? error.message : error}`
+        });
+    }
+}
 /**/
 /*For Admins*/
 export const totalDoctors = async (request, response) => {
@@ -629,6 +658,36 @@ export const cancelAppointmentForDoctorAndUser = async (request, response) => {
         return response.status(500).json({
             success: false,
             error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+        });
+    }
+}
+export const changeAvailable = async (request, response) => {
+    try {
+        if (!request.adminId) {
+            return response.status(405).json({
+                success: false,
+                error: 'Method not allowed this is for admin only'
+            });
+        }
+        const { doctorId } = request.body;
+        const doctor = await Doctor.findById(doctorId);
+        if (!doctor) {
+            return response.status(404).json({
+                success: false,
+                error: 'Doctor not found'
+            });
+        }
+        doctor.available = !doctor.available;
+        doctor.save();
+        return response.status(200).json({
+            success: false,
+            message: `Doctor status changed to ${doctor.available}`
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: `Internal Server Errror: ${error instanceof Error ? error.message : error}`
         });
     }
 }
