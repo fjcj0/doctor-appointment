@@ -1,12 +1,12 @@
 import { response, request } from "express";
 import { Appointment } from "../models/appointment.model.js";
 import { Doctor } from "../models/doctor.model.js";
-/*For User*/
+/* For User */
 export const createAppointment = async (request, response) => {
     try {
         const { doctorId, date, fees } = request.body;
         if (!request.userId) {
-            return response.status(400).json({
+            return response.status(401).json({
                 success: false,
                 error: 'You need to login'
             });
@@ -15,6 +15,13 @@ export const createAppointment = async (request, response) => {
             return response.status(400).json({
                 success: false,
                 error: 'Doctor, date, and fees fields are required'
+            });
+        }
+        const doctor = await Doctor.findById(doctorId);
+        if (!doctor) {
+            return response.status(404).json({
+                success: false,
+                error: 'Doctor not found'
             });
         }
         const appointment = new Appointment({
@@ -52,11 +59,26 @@ export const userCancelAppointment = async (request, response) => {
                 error: 'Please choose appointment'
             });
         }
-        const appointment = await Appointment.findOne({ userId: request.userId, _id: appointmentId });
+        const appointment = await Appointment.findOne({
+            userId: request.userId,
+            _id: appointmentId
+        });
         if (!appointment) {
             return response.status(404).json({
                 success: false,
-                error: 'Error appointment not found!!'
+                error: 'Appointment not found!!'
+            });
+        }
+        if (appointment.status === 'completed') {
+            return response.status(400).json({
+                success: false,
+                error: 'Cannot cancel a completed appointment'
+            });
+        }
+        if (appointment.status === 'cancelled') {
+            return response.status(400).json({
+                success: false,
+                error: 'Appointment is already cancelled'
             });
         }
         appointment.status = 'cancelled';
@@ -77,28 +99,43 @@ export const userCancelAppointment = async (request, response) => {
 export const payOnline = async (request, response) => {
     try {
         if (!request.userId) {
-            return response.status(405).json({
+            return response.status(401).json({
                 success: false,
-                error: 'Method not allowed this method only for user'
+                error: 'You need to login'
             });
         }
         const { appointmentId, doctorId } = request.body;
         if (!appointmentId || !doctorId) {
             return response.status(400).json({
                 success: false,
-                error: 'No doctor or appointment known'
+                error: 'Appointment ID and Doctor ID are required'
             });
         }
-        const appointment = await Appointment.findOne({ _id: appointmentId, userId: request.userId });
+        const appointment = await Appointment.findOne({
+            _id: appointmentId,
+            userId: request.userId
+        });
         if (!appointment) {
             return response.status(404).json({
                 success: false,
                 error: 'Appointment not found'
             });
         }
-        const doctor = await Doctor.findOne({ _id: doctorId });
-        if (!doctor) {
+        if (appointment.status === 'completed') {
             return response.status(400).json({
+                success: false,
+                error: 'Appointment is already paid and completed'
+            });
+        }
+        if (appointment.status === 'cancelled') {
+            return response.status(400).json({
+                success: false,
+                error: 'Cannot pay for a cancelled appointment'
+            });
+        }
+        const doctor = await Doctor.findById(doctorId);
+        if (!doctor) {
+            return response.status(404).json({
                 success: false,
                 error: 'Doctor not found'
             });
@@ -110,6 +147,7 @@ export const payOnline = async (request, response) => {
         await appointment.save();
         return response.status(200).json({
             success: true,
+            message: 'Payment completed successfully',
             appointment
         });
     } catch (error) {
@@ -123,15 +161,17 @@ export const payOnline = async (request, response) => {
 export const userAppointments = async (request, response) => {
     try {
         if (!request.userId) {
-            return response.status(405).json({
+            return response.status(401).json({
                 success: false,
-                error: 'This method not allowed this method only for users',
+                error: 'You need to login'
             });
         }
+
         const userAppointments = await Appointment.find({ userId: request.userId })
             .populate('doctorId', ['name', 'speciality', 'address', 'profilePicture'])
-            .select(['_id', 'doctorId', 'date', 'fees', 'status', 'payment'])
+            .select(['_id', 'doctorId', 'date', 'fees', 'status', 'payment', 'createdAt'])
             .sort({ createdAt: -1 });
+
         return response.status(200).json({
             success: true,
             userAppointments
@@ -149,14 +189,15 @@ export const userAppointments = async (request, response) => {
 export const totalAppointMentsDoctor = async (request, response) => {
     try {
         if (!request.doctorId) {
-            return response.status(405).json({
+            return response.status(401).json({
                 success: false,
-                error: 'This method not allowed information for doctors only'
+                error: 'Access denied. Doctors only.'
             });
         }
         const totalAppointmentsForDoctor = await Appointment.countDocuments({
             doctorId: request.doctorId
         });
+
         return response.status(200).json({
             success: true,
             totalAppointmentsForDoctor
@@ -172,18 +213,18 @@ export const totalAppointMentsDoctor = async (request, response) => {
 export const totalPatientsForDoctor = async (request, response) => {
     try {
         if (!request.doctorId) {
-            return response.status(405).json({
+            return response.status(401).json({
                 success: false,
-                error: 'This method not allowed information for doctors only'
+                error: 'Access denied. Doctors only.'
             });
         }
-        const totalPatientsForDoctor = await Appointment.countDocuments({
+        const totalPatientsForDoctor = await Appointment.distinct('userId', {
             doctorId: request.doctorId,
-            status: 'pending'
+            status: { $in: ['pending', 'completed'] }
         });
         return response.status(200).json({
             success: true,
-            totalPatientsForDoctor
+            totalPatientsForDoctor: totalPatientsForDoctor.length
         });
     } catch (error) {
         console.log(error instanceof Error ? error.message : error);
@@ -196,9 +237,9 @@ export const totalPatientsForDoctor = async (request, response) => {
 export const latestDoctorAppointments = async (request, response) => {
     try {
         if (!request.doctorId) {
-            return response.status(405).json({
+            return response.status(401).json({
                 success: false,
-                error: 'This method not allowed'
+                error: 'Access denied. Doctors only.'
             });
         }
         const doctorAppointmentsLimited = await Appointment.find({ doctorId: request.doctorId })
@@ -206,7 +247,7 @@ export const latestDoctorAppointments = async (request, response) => {
                 path: 'userId',
                 select: 'name profilePicture'
             })
-            .select(['_id', 'userId', 'payment', 'date', 'fees', 'status'])
+            .select(['_id', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
             .sort({ createdAt: -1 })
             .limit(10);
         return response.status(200).json({
@@ -224,9 +265,9 @@ export const latestDoctorAppointments = async (request, response) => {
 export const doctorAppointments = async (request, response) => {
     try {
         if (!request.doctorId) {
-            return response.status(405).json({
+            return response.status(401).json({
                 success: false,
-                error: 'This method not allowed'
+                error: 'Access denied. Doctors only.'
             });
         }
         const doctorAppointments = await Appointment.find({ doctorId: request.doctorId })
@@ -234,8 +275,9 @@ export const doctorAppointments = async (request, response) => {
                 path: 'userId',
                 select: 'name profilePicture'
             })
-            .select(['_id', 'userId', 'payment', 'date', 'fees', 'status'])
+            .select(['_id', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
             .sort({ createdAt: -1 });
+
         return response.status(200).json({
             success: true,
             doctorAppointments
@@ -251,30 +293,51 @@ export const doctorAppointments = async (request, response) => {
 export const doctorAcceptAppointment = async (request, response) => {
     try {
         if (!request.doctorId) {
-            return response.status(405).json({
+            return response.status(401).json({
                 success: false,
-                error: 'Method not allowed this method only for doctors'
+                error: 'Access denied. Doctors only.'
             });
         }
-        const { appointmendId } = request.body;
-        if (!appointmendId) return response.status(400).json({
-            success: false,
-            error: 'No appointment selected'
-        });
-        const appointment = await Appointment.findOne({ _id: appointmendId, doctorId: request.doctorId });
-        if (!appointment) return response.status(404).json({
-            success: false,
-            error: 'Appointment not found'
-        });
-        const doctor = await Doctor.findOne({ _id: request.doctorId });
-        if (!doctor) {
+        const { appointmentId } = request.body;
+        if (!appointmentId) {
             return response.status(400).json({
+                success: false,
+                error: 'No appointment selected'
+            });
+        }
+        const appointment = await Appointment.findOne({
+            _id: appointmentId,
+            doctorId: request.doctorId
+        });
+        if (!appointment) {
+            return response.status(404).json({
+                success: false,
+                error: 'Appointment not found'
+            });
+        }
+        if (appointment.status === 'completed') {
+            return response.status(400).json({
+                success: false,
+                error: 'Appointment is already completed'
+            });
+        }
+        if (appointment.status === 'cancelled') {
+            return response.status(400).json({
+                success: false,
+                error: 'Cannot accept a cancelled appointment'
+            });
+        }
+        const doctor = await Doctor.findById(request.doctorId);
+        if (!doctor) {
+            return response.status(404).json({
                 success: false,
                 error: 'Doctor not found'
             });
         }
-        doctor.earning = (doctor.earning || 0) + appointment.fees;
-        await doctor.save();
+        if (appointment.payment !== 'online') {
+            doctor.earning = (doctor.earning || 0) + appointment.fees;
+            await doctor.save();
+        }
         appointment.status = 'completed';
         await appointment.save();
         return response.status(200).json({
@@ -293,28 +356,224 @@ export const doctorAcceptAppointment = async (request, response) => {
 export const doctorCancelAppointment = async (request, response) => {
     try {
         if (!request.doctorId) {
-            return response.status(405).json({
+            return response.status(401).json({
                 success: false,
-                error: 'This method not allowed this method only for doctors'
+                error: 'Access denied. Doctors only.'
             });
         }
         const { appointmentId } = request.body;
-        if (!appointmentId) return response.status(400).json({
-            success: false,
-            error: 'Appointment Id not found'
+        if (!appointmentId) {
+            return response.status(400).json({
+                success: false,
+                error: 'Appointment ID is required'
+            });
+        }
+        const appointment = await Appointment.findOne({
+            doctorId: request.doctorId,
+            _id: appointmentId
         });
-        const appointment = await Appointment.findOne({ doctorId: request.doctorId, _id: appointmentId });
         if (!appointment) {
             return response.status(404).json({
                 success: false,
                 error: 'Appointment Not Found'
             });
         }
+        if (appointment.status === 'completed') {
+            return response.status(400).json({
+                success: false,
+                error: 'Cannot cancel a completed appointment'
+            });
+        }
+        if (appointment.status === 'cancelled') {
+            return response.status(400).json({
+                success: false,
+                error: 'Appointment is already cancelled'
+            });
+        }
         appointment.status = 'cancelled';
         await appointment.save();
         return response.status(200).json({
             success: true,
-            message: 'Appointment has been cancelled successfully'
+            message: 'Appointment has been cancelled successfully',
+            appointment
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+        });
+    }
+}
+/**/
+/*For Admins*/
+export const totalDoctors = async (request, response) => {
+    try {
+        if (!request.adminId) {
+            return response.status(401).json({
+                success: false,
+                error: 'Access denied. Admins only.'
+            });
+        }
+        const totalDoctors = await Doctor.countDocuments();
+        return response.status(200).json({
+            success: true,
+            totalDoctors
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+        });
+    }
+}
+export const totalAppointments = async (request, response) => {
+    try {
+        if (!request.adminId) {
+            return response.status(401).json({
+                success: false,
+                error: 'Access denied. Admins only.'
+            });
+        }
+        const totalAllAppointments = await Appointment.countDocuments();
+        return response.status(200).json({
+            success: false,
+            totalAllAppointments
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+        });
+    }
+}
+export const totalPatients = async (request, response) => {
+    try {
+        if (!request.adminId) {
+            return response.status(401).json({
+                success: false,
+                error: 'Access denied. Admins only.'
+            });
+        }
+        const totalAllPatients = await Appointment.distinct('userId');
+        return response.status(200).json({
+            success: true,
+            totalAllPatients: totalAllPatients.length
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+        });
+    }
+}
+export const latestAppointmentsForDoctors = async (request, response) => {
+    try {
+        if (!request.adminId) {
+            return response.status(401).json({
+                success: false,
+                error: 'Access denied. Admins only.'
+            });
+        }
+        const appointmentsLimited = await Appointment.find({})
+            .populate({
+                path: 'doctorId',
+                select: 'name profilePicture'
+            })
+            .populate({
+                path: 'userId',
+                select: 'name profilePicture'
+            })
+            .select(['_id', 'doctorId', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
+            .sort({ createdAt: -1 })
+            .limit(10);
+
+        return response.status(200).json({
+            success: true,
+            appointmentsLimited
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+        });
+    }
+}
+export const appointments = async (request, response) => {
+    try {
+        if (!request.adminId) {
+            return response.status(401).json({
+                success: false,
+                error: 'Access denied. Admins only.'
+            });
+        }
+        const allAppointments = await Appointment.find({})
+            .populate([{
+                path: 'userId',
+                select: 'name profilePicture'
+            }, {
+                path: 'doctorId',
+                select: 'name profilePicture speciality'
+            }])
+            .select(['_id', 'userId', 'doctorId', 'payment', 'date', 'fees', 'status', 'createdAt'])
+            .sort({ createdAt: -1 });
+
+        return response.status(200).json({
+            success: true,
+            allAppointments
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+        });
+    }
+}
+export const cancelAppointmentForDoctorAndUser = async (request, response) => {
+    try {
+        if (!request.adminId) {
+            return response.status(401).json({
+                success: false,
+                error: 'Access denied. Admins only.'
+            });
+        }
+        const { appointmentId } = request.body;
+        if (!appointmentId) {
+            return response.status(400).json({
+                success: false,
+                error: 'Appointment ID is required'
+            });
+        }
+        const appointment = await Appointment.findById(appointmentId);
+        if (!appointment) {
+            return response.status(404).json({
+                success: false,
+                error: 'Appointment not found'
+            });
+        }
+        if (appointment.status === 'completed') {
+            return response.status(400).json({
+                success: false,
+                error: 'Cannot cancel a completed appointment'
+            });
+        }
+        if (appointment.status === 'cancelled') {
+            return response.status(400).json({
+                success: false,
+                error: 'Appointment is already cancelled'
+            });
+        }
+        appointment.status = 'cancelled';
+        await appointment.save();
+        return response.status(200).json({
+            success: true,
+            message: 'Appointment cancelled successfully by admin',
+            appointment
         });
     } catch (error) {
         console.log(error instanceof Error ? error.message : error);
