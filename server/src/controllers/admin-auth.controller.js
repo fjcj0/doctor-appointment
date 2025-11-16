@@ -1,5 +1,5 @@
 import { request, response } from 'express';
-import { Admin } from '../models/admin.modal.js';
+import { Admin } from '../models/admin.model.js';
 import { isEmailExist } from '../utils/isEmailExist.js';
 import bcryptjs from 'bcryptjs';
 import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';

@@ -1,5 +1,5 @@
 import { Doctor } from '../models/doctor.model.js';
-import { Admin } from '../models/admin.modal.js';
+import { Admin } from '../models/admin.model.js';
 import { User } from '../models/user.model.js';
 export const isEmailExist = async (email) => {
     const isEmailExistAtUser = await User.findOne({ email });

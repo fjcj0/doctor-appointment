@@ -3,7 +3,7 @@ import bcryptjs from 'bcryptjs';
 import { Doctor } from "../models/doctor.model.js";
 import { isEmailExist } from "../utils/isEmailExist.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { Admin } from "../models/admin.modal.js";
+import { Admin } from "../models/admin.model.js";
 export const checkAuthDoctor = async (request, response) => {
     try {
         const doctor = await Doctor.findById(request.doctorId).select('-password');
