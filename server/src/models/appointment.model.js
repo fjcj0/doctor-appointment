@@ -19,10 +19,14 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    fees: {
+        type: Number,
+        required: true
+    },
     payment: {
         type: String,
-        enum: ['cache', 'online'],
-        default: 'cache'
+        enum: ['cash', 'online'],
+        default: 'cash'
     }
 }, { timestamps: true });
 export const Appointment = mongoose.model('Appointment', appointmentSchema);
