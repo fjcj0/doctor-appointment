@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { User } from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 export const verifyToken = (type) => {
     return async (request, response, next) => {
@@ -47,6 +48,21 @@ export const verifyToken = (type) => {
                 }
                 const idField = config.idField;
                 request[idField] = decoded[idField] || decoded.userId || decoded.id;
+                if (idField === 'userId') {
+                    const user = await User.findById(request[idField]).select('isVerified');
+                    if (!user) {
+                        return response.status(404).json({
+                            success: false,
+                            error: 'User not found'
+                        });
+                    }
+                    if (user.isVerified === false) {
+                        return response.status(403).json({
+                            success: false,
+                            error: 'Account not verified. Please verify your email address.'
+                        });
+                    }
+                }
                 next();
             } catch (error) {
                 let statusCode = 401;
@@ -65,7 +81,7 @@ export const verifyToken = (type) => {
                 });
             }
         } catch (error) {
-            console.error('Token verification error:', error);
+            console.log('Token verification error: ', error instanceof Error ? error.message : error);
             return response.status(500).json({
                 success: false,
                 error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
