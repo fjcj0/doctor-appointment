@@ -11,6 +11,7 @@ import job from './config/cron.js';
 import authRoute from './routes/user-auth.route.js';
 import adminRoute from './routes/admin-auth.route.js';
 import doctorRoute from './routes/doctor-auth.route.js';
+import userAppointmentRoute from './routes/user-appointment.route.js';
 import cookieParser from 'cookie-parser';
 import { uploadImage } from "./lib/uploadImage.js";
 import upload from "./config/multer.js";
@@ -57,6 +58,7 @@ app.get('/cron', (request, response) => {
     });
 });
 app.post('/upload-image', upload.single('image'), uploadImage);
+app.use(userAppointmentRoute);
 app.use('/api/user-auth', authRoute);
 app.use('/api/admin-auth', adminRoute);
 app.use('/api/doctor-auth', doctorRoute);
