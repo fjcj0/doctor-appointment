@@ -36,21 +36,29 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        default: null
+        default: ''
     },
     address: {
         type: String,
-        default: null,
+        default: '',
     },
     resetPasswordToken: {
         type: String,
-        unique: true
+        sparse: true,
+        default: null
     },
-    resetPasswordExpiresAt: Date,
+    resetPasswordExpiresAt: {
+        type: Date,
+        default: null
+    },
     verificationToken: {
         type: String,
-        unique: true
+        sparse: true,
+        default: null
     },
-    verificationTokenExpiresAt: Date,
+    verificationTokenExpiresAt: {
+        type: Date,
+        default: null
+    },
 }, { timestamps: true });
 export const User = mongoose.model('User', userSchema);
