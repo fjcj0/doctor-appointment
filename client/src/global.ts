@@ -89,10 +89,9 @@ export interface UserStoreProps {
     verifyEmail: (code: string) => Promise<void>,
     updateProfile: (
         name: string,
-        email: string,
-        profilePicture: string,
+        profilePicture: string | null,
         birthday: string | null,
-        gender: 'male' | 'female',
+        gender: string | null,
         address: string | null,
         phone: string | null,
     ) => Promise<void>,

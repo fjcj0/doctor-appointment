@@ -196,6 +196,14 @@ const CreateAccountPage = () => {
                     <div className="w-full items-start justify-start">
                         <ButtonAuth text="Create Account" onPress={handleClick} isLoading={isLoading} />
                     </div>
+                    <div className="w-full flex items-start justify-start">
+                        <TextAuth
+                            text="Have an account?"
+                            styling="flex items-start justify-start"
+                            direct="/login"
+                            textStyle="text-red-500 hover:text-red-800"
+                        />
+                    </div>
                 </div>
             </div>
         </FullScreenTsx>

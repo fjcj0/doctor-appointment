@@ -6,7 +6,7 @@ axios.defaults.withCredentials = true;
 const baseUrl = import.meta.env.NODE_ENV == 'production' ? '' : 'http://localhost:2340';
 const useUserStore = create<UserStoreProps>((set) => ({
     isVerified: false,
-    isCheckingVerify: false,
+    isCheckingVerify: true,
     isLoading: false,
     user: null,
     checkAuth: async () => {
@@ -17,6 +17,7 @@ const useUserStore = create<UserStoreProps>((set) => ({
         } catch (error: unknown) {
             set({
                 isVerified: false,
+                user: null
             });
         } finally {
             set({ isCheckingVerify: false });
@@ -131,19 +132,17 @@ const useUserStore = create<UserStoreProps>((set) => ({
     },
     updateProfile: async (
         name: string,
-        email: string,
-        profilePicture: string,
+        profilePicture: string | null,
         birthday: string | null,
-        gender: 'male' | 'female',
+        gender: string | null,
         address: string | null,
         phone: string | null
     ) => {
         set({ isLoading: true });
         try {
-            const response = await axios.put(`${baseUrl}/api/user-auth/update-profile`, {
+            const response = await axios.put(`${baseUrl}/api/user-auth/update-user`, {
                 name,
-                email,
-                profilePicture,
+                image: profilePicture,
                 birthday,
                 gender,
                 address,

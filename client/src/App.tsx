@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import { useEffect, type ReactNode } from 'react';
 import LoginPage from './pages/AuthPages/LoginPage';
 import CreateAccountPage from './pages/AuthPages/CreateAccountPage';
@@ -30,28 +30,42 @@ import RestPasswordPage from './pages/AuthPages/RestPasswordPage';
 import useUserStore from './store/UserStore';
 import Loader from './tools/Loader';
 const ProtectedUserRoute = ({ children }: { children: ReactNode }) => {
-  const { isVerified } = useUserStore();
-  if (!isVerified) {
-    return <Navigate to="/" replace />;
+  const { isVerified, isCheckingVerify } = useUserStore();
+  if (isCheckingVerify) {
+    return (
+      <Loader
+        content_loader_style='w-full h-[100vh] flex items-center justify-center'
+        firSpinnerSize='w-20 h-20'
+        secondSpinnerSize='w-14 h-14'
+      />
+    );
   }
-  return children;
+  if (!isVerified) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
 };
 const RedirectAuthenticatedUser = ({ children }: { children: ReactNode }) => {
-  const { isVerified } = useUserStore();
+  const { isVerified, isCheckingVerify } = useUserStore();
+  if (isCheckingVerify) {
+    return (
+      <Loader
+        content_loader_style='w-full h-[100vh] flex items-center justify-center'
+        firSpinnerSize='w-20 h-20'
+        secondSpinnerSize='w-14 h-14'
+      />
+    );
+  }
   if (isVerified) {
     return <Navigate to="/" replace />;
   }
+  return <>{children}</>;
 };
 function App() {
-  const { checkAuth, isCheckingVerify } = useUserStore();
+  const { checkAuth } = useUserStore();
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-  if (isCheckingVerify) {
-    return (
-      <Loader content_loader_style='w-full h-[100vh] flex items-center justify-center' firSpinnerSize='w-20 h-20' secondSpinnerSize='w-14 h-14' />
-    );
-  }
   return (
     <div className='w-screen min-h-[100vh]'>
       <ListsHeaderLinks />
@@ -72,9 +86,12 @@ function App() {
               <UserAppointmentsPage />
             </ProtectedUserRoute>
           } />
-          <Route path='/appointment/:id' element={<AppointmentPage />} />
+          <Route path='/appointment/:id' element={
+            <ProtectedUserRoute>
+              <AppointmentPage />
+            </ProtectedUserRoute>
+          } />
         </Route>
-        {/**/}
         {/*AUTH PAGES*/}
         <Route path='/login' element={
           <RedirectAuthenticatedUser>
@@ -86,24 +103,28 @@ function App() {
             <CreateAccountPage />
           </RedirectAuthenticatedUser>
         } />
-        <Route path='/forget-password' element={<ForgetPassword />} />
+        <Route path='/forget-password' element={
+          <ForgetPassword />
+        } />
         <Route path='/login-admin-or-doctor' element={<LoginDoctorOrAdminPage />} />
         <Route path='/reset-password/:code' element={<RestPasswordPage />} />
-        {/**/}
-        {/*DOCTOR PAGES*/}
-        <Route path='/dashboard-doctor' element={<DashboardLayout typeHeader='doctor' links={doctorLinks} />}>
+        <Route path='/dashboard-doctor' element={
+          <DashboardLayout typeHeader='doctor' links={doctorLinks} />
+        }>
           <Route index element={<DashboardDoctorPage />} />
           <Route path='/dashboard-doctor/appointments' element={<DoctorAppointmentsPage />} />
           <Route path='/dashboard-doctor/profile' element={<ProfileDoctorPage />} />
-        </Route >
-        {/**/}
-        <Route path='/dashboard-admin' element={<DashboardLayout typeHeader='admin' links={adminLinks} />}>
+        </Route>
+        <Route path='/dashboard-admin' element={
+          <DashboardLayout typeHeader='admin' links={adminLinks} />
+        }>
           <Route index element={<DashboardAdminPage />} />
           <Route path='/dashboard-admin/appointments' element={<AdminAppointmentsPage />} />
           <Route path='/dashboard-admin/add-doctor' element={<AddDoctorPage />} />
           <Route path='/dashboard-admin/doctors-list' element={<DoctorsListPage />} />
           <Route path='/dashboard-admin/profile' element={<AdminProfilePage />} />
-        </Route >
+        </Route>
+
         <Route path="*" element={<Page404 />} />
       </Routes>
       <Toaster />
