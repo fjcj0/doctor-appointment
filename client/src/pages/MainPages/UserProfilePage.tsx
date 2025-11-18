@@ -98,12 +98,24 @@ const UserProfilePage = () => {
             return;
         }
         try {
-            await updateProfile(name, profilePicture, birthday, gender, address, phone);
+            let formattedBirthday = '';
+            if (birthday) {
+                const date = new Date(birthday);
+                formattedBirthday = date.toISOString().split('T')[0];
+            }
+            await updateProfile(
+                name,
+                profilePicture,
+                formattedBirthday,
+                gender,
+                address,
+                phone
+            );
             setIsEdit(false);
         } catch (error: unknown) {
             console.log(error instanceof Error ? error.message : error);
         }
-    };
+    }
     const handleEditProfile = () => {
         setIsEdit(true);
     };
