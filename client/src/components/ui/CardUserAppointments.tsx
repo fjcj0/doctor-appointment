@@ -12,8 +12,10 @@ const CardUserAppointments = ({
     date,
     isCancelled,
     index,
-    isCompleted
-}: cardUserProps & { appointmentId: string, isCompleted: boolean }) => {
+    isCompleted,
+    fees,
+    doctorId,
+}: cardUserProps & { appointmentId: string, isCompleted: boolean, doctorId: string, fees: number }) => {
     const [isCancel, setIsCancel] = useState(false);
     const [isAccept, setIsAccept] = useState(false);
     const { cancelAppointment } = useUserStore();

@@ -32,7 +32,6 @@ const UserAppointmentsPage = () => {
             <div className="w-full">
                 <h1 className="font-bold text-xl text-black/60 font-nunito">My appointments</h1>
             </div>
-
             {userAppointments.length === 0 ? (
                 <div className="w-full h-[50vh] flex items-center justify-center">
                     <p className="text-gray-500 text-lg">No appointments yet</p>
@@ -46,7 +45,10 @@ const UserAppointmentsPage = () => {
                 >
                     {userAppointments.map((userAppointment, index) => (
                         <CardUserAppointments
+                            index={index}
+                            fees={userAppointment.fees}
                             appointmentId={userAppointment._id}
+                            doctorId={userAppointment.doctorId._id}
                             key={index}
                             name={userAppointment.doctorId.name}
                             image={userAppointment.doctorId.profilePicture}
@@ -55,7 +57,6 @@ const UserAppointmentsPage = () => {
                             isCompleted={userAppointment.status === 'completed'}
                             isCancelled={userAppointment.status === 'cancelled'}
                             specail={userAppointment.doctorId.speciality}
-                            index={index}
                         />
                     ))}
                 </motion.div>
