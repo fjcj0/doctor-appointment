@@ -1,7 +1,20 @@
 import { motion } from 'framer-motion';
-import { doctors } from '../constants/data';
 import Card from './ui/Card';
+import { useEffect } from 'react';
+import useScreenStore from '../store/ScreenStore';
+import Loader from '../tools/Loader';
 const Doctors = () => {
+    const { limitedDoctorsScreen, getLimitedDoctorsScreen, isDoctorLimitingLoading } = useScreenStore();
+    useEffect(() => {
+        getLimitedDoctorsScreen();
+    }, []);
+    if (isDoctorLimitingLoading) {
+        return (
+            <div className='flex items-start justify-center'>
+                <Loader firSpinnerSize='w-20 h-20' secondSpinnerSize='w-14 h-14' />
+            </div>
+        );
+    }
     return (
         <div className="w-full my-20 flex flex-col gap-2 items-center justify-center">
             <motion.h1
@@ -24,14 +37,16 @@ const Doctors = () => {
             </motion.p>
             <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
                 {
-                    doctors.map((doctor, index) => (
+                    limitedDoctorsScreen.map((doctor, index) => (
                         <Card
                             key={index}
+                            id={doctor._id}
                             name={doctor.name}
-                            image={doctor.image}
+                            profilePicture={doctor.profilePicture}
                             available={doctor.available}
-                            specail={doctor.specail}
+                            specialtiy={doctor.speciality}
                             index={index}
+                            isForAdmin={false}
                         />
                     ))
                 }

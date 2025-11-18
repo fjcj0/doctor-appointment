@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { userLogo } from "../../constants/data";
 import FloatInput from "../../components/ui/FloatInput";
+import useUserStore from "../../store/UserStore";
 const UserProfilePage = () => {
+    const { user } = useUserStore();
     const [isEdit, setIsEdit] = useState(false);
     const [phone, setPhone] = useState('');
     const [name, setName] = useState('');
@@ -36,16 +38,16 @@ const UserProfilePage = () => {
                 <div className="w-full max-w-[40rem] flex flex-col gap-2 items-start justify-start">
                     {
                         !isEdit ? (
-                            <img src={userLogo} className="w-32" alt="User profile" />
+                            <img src={user?.profilePicture} className="w-32" alt="User profile" />
                         ) : (
                             <button type="button">
-                                <img src={userLogo} alt="User profile" />
+                                <img src={user?.profilePicture} alt="User profile" />
                             </button>
                         )
                     }
                     {
                         !isEdit ? (
-                            <h1 className="text-2xl font-bold">Omar Coding</h1>
+                            <h1 className="text-2xl font-bold">{user?.name}</h1>
                         ) : (
                             <div className="w-full">
                                 <FloatInput
@@ -66,13 +68,13 @@ const UserProfilePage = () => {
                     </span>
                     <div className="flex gap-10 items-start justify-start w-full">
                         <p className="min-w-[80px]">Email:</p>
-                        <p>OmarCoding@gmail.com</p>
+                        <p>{user?.email}</p>
                     </div>
                     <div className="flex gap-10 items-start justify-start w-full">
                         <p className="min-w-[80px] pt-7">Phone:</p>
                         {
                             !isEdit ? (
-                                <p className="pt-7">+12-345-22-3</p>
+                                <p className="pt-7">{user?.phone ? user?.phone : 'N/A'}</p>
                             ) : (
                                 <div className="flex-1">
                                     <FloatInput
@@ -91,7 +93,7 @@ const UserProfilePage = () => {
                         <p className="min-w-[80px pt-7 pr-4">Address:</p>
                         {
                             !isEdit ? (
-                                <p className="pt-7">12 Street,texas</p>
+                                <p className="pt-7">{user?.address ? user?.address : 'N/A'}</p>
                             ) : (
                                 <div className="flex-1">
                                     <FloatInput
@@ -115,7 +117,7 @@ const UserProfilePage = () => {
                         <p className="min-w-[80px] pt-4">Gender:</p>
                         {
                             !isEdit ? (
-                                <p className="pt-4">Female</p>
+                                <p className="pt-4">{user?.gender}</p>
                             ) : (
                                 <select defaultValue={'female'} className="border-b-2 border-black outline-none p-2 bg-transparent">
                                     <option value="" disabled={true}>Select Gender</option>
@@ -129,7 +131,7 @@ const UserProfilePage = () => {
                         <p className="min-w-[80px] pt-4">BirthDay:</p>
                         {
                             !isEdit ? (
-                                <p className="pt-4">January 1, 1990</p>
+                                <p className="pt-4">{user?.birthday ? user.birthday : 'N/A'}</p>
                             ) : (
                                 <input
                                     type="date"

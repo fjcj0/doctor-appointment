@@ -15,10 +15,11 @@ export interface cardUserProps {
 export interface doctorInformationProps {
     name: string;
     specail: string;
-    year_experince: number;
+    year_experince: string;
     about: string;
     image: string;
-    fee: string;
+    fees: number;
+    degree: string
 }
 export type linksProps = {
     text: string,
@@ -37,5 +38,62 @@ export interface AppointmentTableProps {
     doctorImage?: string,
     onCancel: () => Promise<void>;
     onConfirm?: () => Promise<void>;
-
+}
+export type DoctorInformationType = {
+    experience: string;
+    name: string,
+    profilePicture: string,
+    speciality: string,
+    about: string,
+    fees: number,
+    degree: string,
+}
+export type DoctorsScreenType = {
+    speciality: string;
+    _id: string;
+    profilePicture: string,
+    available: boolean,
+    name: string,
+}
+export interface ScreenStoreProps {
+    doctor: DoctorInformationType | null,
+    getDoctor: (id: string) => Promise<void>,
+    limitedDoctorsScreen: DoctorsScreenType[],
+    doctorsScreen: DoctorsScreenType[],
+    getLimitedDoctorsScreen: () => Promise<void>,
+    getDoctorsScreen: () => Promise<void>,
+    isDoctorLimitingLoading: boolean,
+    relatedDoctors: DoctorsScreenType[],
+    getRelatedDoctors: (speciality: string, name: string) => Promise<void>
+}
+export type UserType = {
+    _id: string;
+    name: string;
+    email: string;
+    profilePicture: string;
+    isVerified: boolean;
+    birthday: string | null;
+    gender: 'male' | 'female';
+    address: string | null;
+    phone: string | null;
+} | null;
+export interface UserStoreProps {
+    isVerified: boolean,
+    isLoading: boolean,
+    isCheckingVerify: boolean,
+    user: UserType,
+    checkAuth: () => Promise<void>,
+    createAccount: (name: string, email: string, password: string, gender: string) => Promise<void>,
+    login: (email: string, password: string) => Promise<void>,
+    logout: () => Promise<void>,
+    verifyEmail: (code: string) => Promise<void>,
+    updateProfile: (
+        name: string,
+        email: string,
+        profilePicture: string,
+        birthday: string | null,
+        gender: 'male' | 'female',
+        address: string | null,
+        phone: string | null,
+    ) => Promise<void>,
 }

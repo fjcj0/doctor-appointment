@@ -8,7 +8,10 @@ import TextAuth from "../../components/TextAuth";
 import { warningIcon } from "../../constants/data";
 import LoaderPage from "../../components/LoaderPage";
 import VerificationCode from "./VerificationCode";
+import useUserStore from "../../store/UserStore";
+import toast from 'react-hot-toast';
 const CreateAccountPage = () => {
+    const { isLoading, createAccount } = useUserStore();
     const [pendingVerification, setPendingVerification] = useState<boolean>(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -47,7 +50,7 @@ const CreateAccountPage = () => {
         if (!name) {
             setErrorName('Name is required');
             hasError = true;
-        } else if (name.length > 4) {
+        } else if (name.length < 4) {
             setErrorName('Name must be at most 4 characters long');
             hasError = true;
         }
@@ -70,8 +73,12 @@ const CreateAccountPage = () => {
             hasError = true;
         }
         if (!hasError) {
-            console.log('Account creation successful', { name, gender, email, password });
-            setPendingVerification(true);
+            try {
+                await createAccount(name, email, password, gender);
+                setPendingVerification(true);
+            } catch (error: unknown) {
+                console.log(error instanceof Error ? error.message : error);
+            }
         }
     };
     const handleEmailChange = (value: string) => {
@@ -157,7 +164,7 @@ const CreateAccountPage = () => {
                                 Gender
                             </label>
                             <div className="flex space-x-4">
-                                {['Male', 'Female', 'Other'].map((option) => (
+                                {['male', 'female'].map((option) => (
                                     <label key={option} className="flex items-center space-x-2 cursor-pointer">
                                         <input
                                             type="radio"
@@ -187,7 +194,7 @@ const CreateAccountPage = () => {
                         textStyle="text-blue-600 hover:text-blue-800"
                     />
                     <div className="w-full items-start justify-start">
-                        <ButtonAuth text="Create Account" onPress={handleClick} />
+                        <ButtonAuth text="Create Account" onPress={handleClick} isLoading={isLoading} />
                     </div>
                 </div>
             </div>

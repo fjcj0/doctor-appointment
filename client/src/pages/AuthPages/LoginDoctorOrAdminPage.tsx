@@ -104,7 +104,7 @@ const LoginDoctorOrAdminPage = () => {
                         />
                     </div>
                     <div className="w-full flex items-center justify-between">
-                        <ButtonAuth text="Sign In" onPress={handleClick} />
+                        <ButtonAuth text="Sign In" onPress={handleClick} isLoading={false} />
                         <button
                             type="button"
                             className="font-poppins text-xs hover:underline duration-300 transition-all flex items-center justify-center gap-1"

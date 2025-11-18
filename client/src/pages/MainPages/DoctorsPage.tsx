@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../../components/ui/Card";
-import { doctors, filterIcon, specialties } from "../../constants/data";
+import { filterIcon, specialties } from "../../constants/data";
 import { motion, AnimatePresence } from 'framer-motion';
+import useScreenStore from "../../store/ScreenStore";
+import Loader from "../../tools/Loader";
+import LoaderMainScreen from "../../tools/LoaderMainScreen";
 const DoctorsPage = () => {
     const [special, setSpecial] = useState('');
     const [filterOpen, setFilterOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -53,19 +57,37 @@ const DoctorsPage = () => {
     const getButtonClassName = (specialtyText: string) => {
         const baseClasses = "px-3 py-2 duration-300 transition-all w-full flex items-start justify-start font-nunito border-[0.3px] border-gray-300 rounded-lg";
         const isActive = special === specialtyText;
-
         if (isActive) {
             return `${baseClasses} bg-purple-2 text-white`;
         } else {
             return `${baseClasses} hover:bg-purple-2 hover:text-white`;
         }
     };
+    const { doctorsScreen, getDoctorsScreen } = useScreenStore();
+    useEffect(() => {
+        const GetDoctors = async () => {
+            try {
+                setIsLoading(true);
+                await getDoctorsScreen();
+            } catch (error: unknown) {
+                console.log(error instanceof Error ? error.message : error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        GetDoctors();
+    }, []);
     const filteredDoctors = special
-        ? doctors.filter(doctor =>
-            doctor.specail.toLowerCase().includes(special.toLowerCase()) ||
-            special.toLowerCase().includes(doctor.specail.toLowerCase())
+        ? doctorsScreen.filter(doctor =>
+            doctor.speciality.toLowerCase().includes(special.toLowerCase()) ||
+            special.toLowerCase().includes(doctor.speciality.toLowerCase())
         )
-        : doctors;
+        : doctorsScreen;
+    if (isLoading) {
+        return (
+            <LoaderMainScreen />
+        );
+    }
     return (
         <section className="flex flex-col my-10">
             <button
@@ -124,12 +146,14 @@ const DoctorsPage = () => {
                     {filteredDoctors.length > 0 ? (
                         filteredDoctors.map((doctor, index) => (
                             <Card
+                                id={doctor._id}
                                 key={index}
                                 available={doctor.available}
                                 name={doctor.name}
-                                specail={doctor.specail}
+                                specialtiy={doctor.speciality}
                                 index={index}
-                                image={doctor.image}
+                                profilePicture={doctor.profilePicture}
+                                isForAdmin={false}
                             />
                         ))
                     ) : (

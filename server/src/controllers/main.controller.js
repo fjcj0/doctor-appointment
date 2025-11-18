@@ -78,3 +78,38 @@ export const doctors = async (request, response) => {
         });
     }
 }
+export const relatedDoctors = async (request, response) => {
+    try {
+        const { speciality, name } = request.params;
+        if (!speciality) {
+            return response.status(400).json({
+                success: false,
+                error: 'Speciality is required'
+            });
+        }
+        const cacheKey = `related_doctors_${speciality}`;
+        let doctors = cache.get(cacheKey);
+        if (!doctors) {
+            doctors = await Doctor.find({ speciality })
+                .select(['_id', 'name', 'available', 'speciality', 'profilePicture', 'experience', 'rating']);
+            cache.set(cacheKey, doctors, 600);
+        }
+        let filteredDoctors = doctors;
+        if (name) {
+            filteredDoctors = doctors.filter(doctor =>
+                doctor.name.toLowerCase() !== name.toLowerCase()
+            );
+        }
+        const limitedDoctors = filteredDoctors.slice(0, 6);
+        return response.status(200).json({
+            success: true,
+            doctors: limitedDoctors,
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: 'Internal Server Error'
+        });
+    }
+}

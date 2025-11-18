@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
-import type { ReactNode } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+import { useEffect, type ReactNode } from 'react';
 import LoginPage from './pages/AuthPages/LoginPage';
 import CreateAccountPage from './pages/AuthPages/CreateAccountPage';
 import ForgetPassword from './pages/AuthPages/ForgetPassword';
@@ -27,10 +27,31 @@ import AdminProfilePage from './pages/AdminPages/AdminProfilePage';
 import DoctorsListPage from './pages/AdminPages/DoctorsListPage';
 import Page404 from './components/Page404';
 import RestPasswordPage from './pages/AuthPages/RestPasswordPage';
-const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-
+import useUserStore from './store/UserStore';
+import Loader from './tools/Loader';
+const ProtectedUserRoute = ({ children }: { children: ReactNode }) => {
+  const { isVerified } = useUserStore();
+  if (!isVerified) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
+const RedirectAuthenticatedUser = ({ children }: { children: ReactNode }) => {
+  const { isVerified } = useUserStore();
+  if (isVerified) {
+    return <Navigate to="/" replace />;
+  }
 };
 function App() {
+  const { checkAuth, isCheckingVerify } = useUserStore();
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+  if (isCheckingVerify) {
+    return (
+      <Loader content_loader_style='w-full h-[100vh] flex items-center justify-center' firSpinnerSize='w-20 h-20' secondSpinnerSize='w-14 h-14' />
+    );
+  }
   return (
     <div className='w-screen min-h-[100vh]'>
       <ListsHeaderLinks />
@@ -41,14 +62,30 @@ function App() {
           <Route path='/about' element={<AboutPage />} />
           <Route path='/all-doctors' element={<DoctorsPage />} />
           <Route path='/contact' element={<ContactPage />} />
-          <Route path='/my-profile' element={<UserProfilePage />} />
-          <Route path='/my-appointments' element={<UserAppointmentsPage />} />
+          <Route path='/my-profile' element={
+            <ProtectedUserRoute>
+              <UserProfilePage />
+            </ProtectedUserRoute>
+          } />
+          <Route path='/my-appointments' element={
+            <ProtectedUserRoute>
+              <UserAppointmentsPage />
+            </ProtectedUserRoute>
+          } />
           <Route path='/appointment/:id' element={<AppointmentPage />} />
         </Route>
         {/**/}
         {/*AUTH PAGES*/}
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/create-account' element={<CreateAccountPage />} />
+        <Route path='/login' element={
+          <RedirectAuthenticatedUser>
+            <LoginPage />
+          </RedirectAuthenticatedUser>
+        } />
+        <Route path='/create-account' element={
+          <RedirectAuthenticatedUser>
+            <CreateAccountPage />
+          </RedirectAuthenticatedUser>
+        } />
         <Route path='/forget-password' element={<ForgetPassword />} />
         <Route path='/login-admin-or-doctor' element={<LoginDoctorOrAdminPage />} />
         <Route path='/reset-password/:code' element={<RestPasswordPage />} />

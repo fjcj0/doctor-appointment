@@ -5,8 +5,11 @@ import { useState, useRef, useEffect } from "react";
 import { userLinks } from "../constants/data";
 import { motion } from 'framer-motion';
 import useHeaderStore from "../store/HeaderStore";
+import useUserStore from "../store/UserStore";
+import { useNavigate } from "react-router-dom";
 const Header = () => {
-    const isAuth = false;
+    const navigate = useNavigate();
+    const { isVerified, user, logout } = useUserStore();
     const location = useLocation();
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -22,9 +25,9 @@ const Header = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-    const handleLogout = () => {
-        console.log("Logging out...");
-        setIsOpen(false);
+    const handleLogout = async () => {
+        await logout();
+        navigate('/');
     };
     return (
         <motion.header
@@ -55,10 +58,10 @@ const Header = () => {
                 })}
             </div>
             <div className="flex gap-2 items-center justify-center">
-                {isAuth ? (
+                {isVerified ? (
                     <div className="flex items-center justify-center gap-2 relative" ref={dropdownRef}>
                         <div className="flex items-center justify-center gap-2 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-                            <img src={userLogo} alt="User logo" className="w-11 h-11 rounded-full" />
+                            <img src={user?.profilePicture} alt={user?.name} className="w-11 h-11 rounded-full" />
                             <button type="button" className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
                                 <img src={arrowDownIcon} className="w-4 h-4" alt="Dropdown arrow" />
                             </button>

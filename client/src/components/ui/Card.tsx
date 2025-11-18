@@ -1,21 +1,28 @@
 import { motion } from 'framer-motion';
 const Card = ({
-    image,
+    profilePicture,
     available,
     name,
-    specail,
+    id,
+    specialtiy,
     index,
     isCheckAble,
-    onChnageCheck
+    onChnageCheck,
+    isForAdmin
 }: {
-    image: string,
+    profilePicture: string,
     available: boolean,
     name: string,
-    specail: string,
+    specialtiy: string,
+    id: string,
     index: number,
     isCheckAble?: boolean,
     onChnageCheck?: () => Promise<void>;
+    isForAdmin: boolean
 }) => {
+    function goToItem() {
+        window.location.href = `/appointment/${id}`;
+    }
     return (
         <motion.div
             initial={{ opacity: 0, x: 100 }}
@@ -26,11 +33,12 @@ const Card = ({
                 ease: "easeOut"
             }}
             viewport={{ once: true, margin: "-20px" }}
-            className="w-full rounded-lg border-[0.3px] border-gray-400 flex flex-col font-nunito items-start justify-start bg-white shadow-sm"
+            onClick={goToItem}
+            className={`w-full rounded-lg border-[0.3px] border-gray-400 flex flex-col font-nunito items-start justify-start bg-white shadow-sm ${!isForAdmin && 'cursor-pointer'}`}
         >
             <div className="bg-[#EAEFFF] hover:bg-purple-2 duration-300  transition-all w-full items-center rounded-t-lg justify-center overflow-hidden">
                 <img
-                    src={image}
+                    src={profilePicture}
                     alt={name}
                     className=""
                 />
@@ -46,7 +54,7 @@ const Card = ({
                     {name}
                 </h1>
                 <p className="text-black/50 text-xs font-semibold">
-                    {specail}
+                    {specialtiy}
                 </p>
                 {
                     isCheckAble !== undefined &&

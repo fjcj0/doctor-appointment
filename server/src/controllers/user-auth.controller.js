@@ -10,7 +10,19 @@ export const checkUserAuth = async (request, response) => {
         if (!user) {
             return response.status(404).json({ success: false, message: 'error no user is authenticated!!' });
         }
-        return response.status(200).json({ success: true, user });
+        return response.status(200).json(
+            {
+                success: true,
+                user: {
+                    ...user._doc,
+                    password: undefined,
+                    resetPasswordToken: undefined,
+                    verificationToken: undefined,
+                    verificationTokenExpiresAt: undefined,
+                    resetPasswordExpiresAt: undefined
+                }
+            }
+        );
     } catch (error) {
         console.log(error instanceof Error ? error.message : error);
         return response.status(500).json({
@@ -82,7 +94,7 @@ export const userLogin = async (request, response) => {
             user.verificationTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
             await user.save();
             await sendVerificationEmail(email, verificationToken);
-            return response.status(200).json({
+            return response.status(203).json({
                 success: true,
                 message: `Verify code sent to email ${email}`
             });
@@ -94,7 +106,11 @@ export const userLogin = async (request, response) => {
             message: 'Login successfully!!',
             user: {
                 ...user._doc,
-                password: undefined
+                password: undefined,
+                resetPasswordToken: undefined,
+                verificationToken: undefined,
+                verificationTokenExpiresAt: undefined,
+                resetPasswordExpiresAt: undefined
             }
         });
     } catch (error) {
@@ -139,7 +155,11 @@ export const updateUser = async (request, response) => {
             message: 'User data has been updated successfully!!',
             user: {
                 ...user._doc,
-                password: undefined
+                password: undefined,
+                resetPasswordToken: undefined,
+                verificationToken: undefined,
+                verificationTokenExpiresAt: undefined,
+                resetPasswordExpiresAt: undefined
             },
         });
     } catch (error) {
@@ -173,7 +193,11 @@ export const verifyEmail = async (request, response) => {
             message: `Welcome ${user.name}`,
             user: {
                 ...user._doc,
-                password: undefined
+                password: undefined,
+                resetPasswordToken: undefined,
+                verificationToken: undefined,
+                verificationTokenExpiresAt: undefined,
+                resetPasswordExpiresAt: undefined
             },
         });
     } catch (error) {

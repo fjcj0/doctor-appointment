@@ -7,7 +7,12 @@ import ButtonAuth from "../../components/ui/ButtonAuth";
 import TextAuth from "../../components/TextAuth";
 import LoaderPage from "../../components/LoaderPage";
 import VerificationCode from "./VerificationCode";
+import useUserStore from "../../store/UserStore";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 const LoginPage = () => {
+    const navigate = useNavigate();
+    const { isLoading, login } = useUserStore();
     const [email, setEmail] = useState('');
     const [pendingVerification, setPendingVerification] = useState<boolean>(false);
     const [password, setPassword] = useState('');
@@ -52,8 +57,12 @@ const LoginPage = () => {
             hasError = true;
         }
         if (!hasError) {
-            console.log('Login successful', { email, password });
-            setPendingVerification(true);
+            try {
+                await login(email, password);
+                navigate('/');
+            } catch (error: unknown) {
+                console.log(error instanceof Error ? error.message : error);
+            }
         }
     };
     const handleEmailChange = (value: string) => {
@@ -111,7 +120,7 @@ const LoginPage = () => {
                     </div>
                     <TextAuth text="Frogot Your Password?" styling="flex items-end justify-end" direct="/forget-password" textStyle="text-blue-600 hover:text-blue-800" />
                     <div className="w-full items-start justify-start">
-                        <ButtonAuth text="Sign In" onPress={handleClick} />
+                        <ButtonAuth text="Sign In" onPress={handleClick} isLoading={isLoading} />
                     </div>
                     <TextAuth textStyle="text-black hover:text-black/55 " text="Dont You Have An Account?" styling="flex items-start justify-start" direct="/create-account" />
                 </div>

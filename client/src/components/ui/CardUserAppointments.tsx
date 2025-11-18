@@ -1,5 +1,5 @@
 import type { cardUserProps } from "../../global";
-import Button from "./Button";
+import { Button } from "./Button";
 import { motion } from 'framer-motion';
 const CardUserAppointments = ({
     image,

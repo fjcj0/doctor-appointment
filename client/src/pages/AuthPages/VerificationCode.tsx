@@ -6,11 +6,14 @@ import ButtonAuth from "../../components/ui/ButtonAuth";
 import { ArrowLeft } from "lucide-react";
 import LoaderPage from "../../components/LoaderPage";
 import { useNavigate } from "react-router";
+import useUserStore from "../../store/UserStore";
+import toast from "react-hot-toast";
 const VerificationCode = ({ email, setPendingVerification, isResetPassword }: {
     email: string;
     setPendingVerification: (value: boolean) => void;
     isResetPassword: boolean;
 }) => {
+    const { isLoading, verifyEmail } = useUserStore();
     const navigate = useNavigate();
     const [code, setCode] = useState('');
     const [errorCode, setErrorCode] = useState('');
@@ -32,17 +35,21 @@ const VerificationCode = ({ email, setPendingVerification, isResetPassword }: {
             setErrorCode('Code is required');
             return;
         }
-        if (code.length !== 6) {
-            setErrorCode('Code must be exactly 6 digits');
+        if (code.length !== 4) {
+            setErrorCode('Code must be exactly 4 digits');
             return;
         }
         if (isResetPassword == true) {
             navigate(`/reset-password/${code}`);
         }
         else {
-            navigate(`/`);
+            try {
+                await verifyEmail(code);
+                navigate('/');
+            } catch (error: unknown) {
+                console.log(error instanceof Error ? error.message : error);
+            }
         }
-        console.log(`Code is true!!`);
     };
     const handleBackToForgetPassword = () => {
         setPendingVerification(false);
@@ -64,7 +71,7 @@ const VerificationCode = ({ email, setPendingVerification, isResetPassword }: {
                     error={errorCode}
                 />
                 <div className="w-full items-start justify-start">
-                    <ButtonAuth text="Verify Code" onPress={handleCode} />
+                    <ButtonAuth text="Verify Code" onPress={handleCode} isLoading={isLoading} />
                 </div>
                 <div className="w-full mt-3 flex items-start justify-start">
                     <button

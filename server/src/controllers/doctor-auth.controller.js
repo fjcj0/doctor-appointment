@@ -129,6 +129,7 @@ export const updateDoctor = async (request, response) => {
         }
         await removeCache('doctors_limiting');
         await removeCache('doctors');
+        await removeCache(`related_doctors_${doctor.speciality}`);
         if (name) doctor.name = name;
         if (speciality) doctor.speciality = speciality;
         if (degree) doctor.degree = degree;
