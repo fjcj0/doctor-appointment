@@ -1,20 +1,34 @@
+import { useState } from "react";
 import type { cardUserProps } from "../../global";
 import { Button } from "./Button";
 import { motion } from 'framer-motion';
+import useUserStore from "../../store/UserStore";
 const CardUserAppointments = ({
+    appointmentId,
     image,
     name,
     specail,
     address,
     date,
     isCancelled,
-    index
-}: cardUserProps) => {
+    index,
+    isCompleted
+}: cardUserProps & { appointmentId: string, isCompleted: boolean }) => {
+    const [isCancel, setIsCancel] = useState(false);
+    const [isAccept, setIsAccept] = useState(false);
+    const { cancelAppointment } = useUserStore();
     const handlePay = async () => {
 
     }
     const handleCancel = async () => {
-
+        setIsCancel(true);
+        try {
+            await cancelAppointment(appointmentId);
+        } catch (error: unknown) {
+            console.log(error instanceof Error ? error.message : error);
+        } finally {
+            setIsCancel(false);
+        }
     }
     const cardVariants = {
         hidden: (index: number) => ({
@@ -53,8 +67,8 @@ const CardUserAppointments = ({
             <div className="">
                 {
                     !isCancelled ? <div className="flex flex-col font-nunito gap-2">
-                        <Button text="Pay Online" hoverColor="bg-purple-2" handleClick={handlePay} />
-                        <Button text="Cancel Appointment" hoverColor="bg-red-500" handleClick={handleCancel} />
+                        <Button text="Pay Online" hoverColor="bg-purple-2" handleClick={handlePay} isLoading={isAccept} />
+                        <Button text="Cancel Appointment" hoverColor="bg-red-500" handleClick={handleCancel} isLoading={isCancel} />
                     </div>
                         :
                         <p className="border-[0.3px] border-red-500 text-red-500 rounded-lg px-5 py-2 font-nunito">Appointment Cancelled</p>

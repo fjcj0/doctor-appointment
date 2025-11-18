@@ -8,7 +8,6 @@ import TextAuth from "../../components/TextAuth";
 import LoaderPage from "../../components/LoaderPage";
 import VerificationCode from "./VerificationCode";
 import useUserStore from "../../store/UserStore";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -58,8 +57,12 @@ const LoginPage = () => {
         }
         if (!hasError) {
             try {
-                await login(email, password);
-                navigate('/');
+                const status = await login(email, password);
+                if (status == 203) {
+                    setPendingVerification(true);
+                } else {
+                    navigate('/');
+                }
             } catch (error: unknown) {
                 console.log(error instanceof Error ? error.message : error);
             }

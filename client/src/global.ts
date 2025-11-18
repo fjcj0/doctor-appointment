@@ -85,6 +85,7 @@ export type doctorIdType = {
     _id: string,
 }
 export type userAppointment = {
+    _id: string;
     doctorId: doctorIdType;
     fees: number,
     payment: string,
@@ -100,7 +101,7 @@ export interface UserStoreProps {
     user: UserType,
     checkAuth: () => Promise<void>,
     createAccount: (name: string, email: string, password: string, gender: string) => Promise<void>,
-    login: (email: string, password: string) => Promise<void>,
+    login: (email: string, password: string) => Promise<number | void>,
     logout: () => Promise<void>,
     verifyEmail: (code: string) => Promise<void>,
     updateProfile: (
@@ -112,4 +113,5 @@ export interface UserStoreProps {
         phone: string | null,
     ) => Promise<void>,
     getUserAppointments: () => Promise<void>,
+    cancelAppointment: (appointmentId: string) => Promise<void>,
 }

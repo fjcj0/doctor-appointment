@@ -1,7 +1,8 @@
-export const Button = ({ hoverColor, handleClick, text }: {
+export const Button = ({ hoverColor, handleClick, text, isLoading }: {
     hoverColor: string;
     handleClick: () => Promise<void>;
     text: string;
+    isLoading: boolean
 }) => {
     const getHoverClass = () => {
         switch (hoverColor) {

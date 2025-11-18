@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import type { UserStoreProps } from '../global';
 axios.defaults.withCredentials = true;
 const baseUrl = import.meta.env.NODE_ENV == 'production' ? '' : 'http://localhost:2340';
-const useUserStore = create<UserStoreProps>((set) => ({
+const useUserStore = create<UserStoreProps>((set, get) => ({
     userAppointments: [],
     isVerified: false,
     isCheckingVerify: true,
@@ -62,8 +62,11 @@ const useUserStore = create<UserStoreProps>((set) => ({
             if (response.status === 200) {
                 set({ user: response.data.user, isVerified: true });
                 toast.success(`Welcome back ${response.data.user.name}!`);
+                return response.status;
             } else if (response.status === 203) {
-                toast.success(`Verify your account an email sent to ${email}`);
+                set({ user: null, isVerified: false });
+                toast.success(`Check your email ${email}!`);
+                return response.status;
             }
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
@@ -188,6 +191,35 @@ const useUserStore = create<UserStoreProps>((set) => ({
             }
         } finally {
             set({ isLoading: false });
+        }
+    },
+    cancelAppointment: async (appointmentId: string) => {
+        try {
+            const response = await axios.post(`${baseUrl}/user-cancel-appointment`, {
+                appointmentId
+            });
+            if (response.status === 200) {
+                const currentAppointments = get().userAppointments;
+                const updatedAppointments = currentAppointments.map(appointment =>
+                    appointment._id === appointmentId
+                        ? { ...appointment, status: 'cancelled' }
+                        : appointment
+                );
+                set({ userAppointments: updatedAppointments });
+                toast.success(`Appointment cancelled successfully`);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data?.error) {
+                toast.error(error.response.data.error);
+                throw new Error(error.response.data.error);
+            } else if (error instanceof Error) {
+                toast.error(error.message);
+                throw error;
+            } else {
+                const errorMessage = 'An unknown error occurred';
+                toast.error(errorMessage);
+                throw new Error(errorMessage);
+            }
         }
     },
 }));
