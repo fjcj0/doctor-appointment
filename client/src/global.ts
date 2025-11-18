@@ -77,7 +77,23 @@ export type UserType = {
     address: string | null;
     phone: string | null;
 } | null;
+export type doctorIdType = {
+    address: string,
+    name: string,
+    profilePicture: string,
+    speciality: string,
+    _id: string,
+}
+export type userAppointment = {
+    doctorId: doctorIdType;
+    fees: number,
+    payment: string,
+    status: string;
+    date: string,
+    isCancelled: boolean,
+}
 export interface UserStoreProps {
+    userAppointments: userAppointment[],
     isVerified: boolean,
     isLoading: boolean,
     isCheckingVerify: boolean,
@@ -95,4 +111,5 @@ export interface UserStoreProps {
         address: string | null,
         phone: string | null,
     ) => Promise<void>,
+    getUserAppointments: () => Promise<void>,
 }

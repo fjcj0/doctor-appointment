@@ -62,10 +62,19 @@ const RedirectAuthenticatedUser = ({ children }: { children: ReactNode }) => {
   return <>{children}</>;
 };
 function App() {
-  const { checkAuth } = useUserStore();
+  const { checkAuth, isCheckingVerify } = useUserStore();
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+  if (isCheckingVerify) {
+    return (
+      <Loader
+        content_loader_style='w-full h-[100vh] flex items-center justify-center'
+        firSpinnerSize='w-20 h-20'
+        secondSpinnerSize='w-14 h-14'
+      />
+    );
+  }
   return (
     <div className='w-screen min-h-[100vh]'>
       <ListsHeaderLinks />

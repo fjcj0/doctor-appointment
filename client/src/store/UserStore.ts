@@ -5,6 +5,7 @@ import type { UserStoreProps } from '../global';
 axios.defaults.withCredentials = true;
 const baseUrl = import.meta.env.NODE_ENV == 'production' ? '' : 'http://localhost:2340';
 const useUserStore = create<UserStoreProps>((set) => ({
+    userAppointments: [],
     isVerified: false,
     isCheckingVerify: true,
     isLoading: false,
@@ -111,7 +112,7 @@ const useUserStore = create<UserStoreProps>((set) => ({
         try {
             const response = await axios.post(`${baseUrl}/api/user-auth/logout-user`);
             if (response.status == 200) {
-                set({ user: null, isVerified: false });
+                set({ user: null, isVerified: false, userAppointments: [] });
                 toast.success('Logged out successfully');
             }
         } catch (error: unknown) {
@@ -152,6 +153,27 @@ const useUserStore = create<UserStoreProps>((set) => ({
                 set({ user: response.data.user });
                 toast.success('Profile updated successfully');
             }
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response?.data?.error) {
+                toast.error(error.response.data.error);
+                throw new Error(error.response.data.error);
+            } else if (error instanceof Error) {
+                toast.error(error.message);
+                throw error;
+            } else {
+                const errorMessage = 'An unknown error occurred';
+                toast.error(errorMessage);
+                throw new Error(errorMessage);
+            }
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    getUserAppointments: async () => {
+        set({ isLoading: true });
+        try {
+            const response = await axios.get(`${baseUrl}/user-appointments`);
+            set({ userAppointments: response.data.userAppointments });
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
                 toast.error(error.response.data.error);

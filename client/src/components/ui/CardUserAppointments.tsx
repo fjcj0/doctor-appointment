@@ -33,13 +33,13 @@ const CardUserAppointments = ({
     };
     return (
         <motion.div
-            className="flex items-end justify-between border-y-[0.3px] border-black py-5"
+            className={`flex flex-col md:flex-row md:items-end gap-10 justify-between border-y-[0.3px] border-black py-5`}
             variants={cardVariants}
             custom={index}
             initial="hidden"
             animate="visible"
         >
-            <div className="flex items-end justify-start gap-7">
+            <div className="flex flex-col md:flex-row md:items-end justify-start gap-7">
                 <div className="bg-[#EAEFFF] hover:bg-purple-2 duration-300 transition-all rounded-xl flex items-center justify-center">
                     <img src={image} className="w-40" alt={name} />
                 </div>

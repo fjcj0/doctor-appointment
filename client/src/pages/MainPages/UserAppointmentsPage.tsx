@@ -1,7 +1,10 @@
 import CardUserAppointments from "../../components/ui/CardUserAppointments";
-import { userAppointments } from "../../constants/data";
 import { motion } from 'framer-motion';
+import useUserStore from "../../store/UserStore";
+import { useEffect } from "react";
+import Loader from "../../tools/Loader";
 const UserAppointmentsPage = () => {
+    const { userAppointments, getUserAppointments, isLoading } = useUserStore();
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -11,6 +14,19 @@ const UserAppointmentsPage = () => {
             }
         }
     };
+    useEffect(() => {
+        getUserAppointments();
+    }, []);
+    console.log(userAppointments);
+    if (isLoading) {
+        return (
+            <Loader
+                content_loader_style='w-full h-[70vh] flex items-center justify-center'
+                firSpinnerSize='w-20 h-20'
+                secondSpinnerSize='w-14 h-14'
+            />
+        );
+    }
     return (
         <section className="my-10">
             <div className="w-full">
@@ -25,12 +41,12 @@ const UserAppointmentsPage = () => {
                 {userAppointments.map((userAppointment, index) => (
                     <CardUserAppointments
                         key={index}
-                        name={userAppointment.name}
-                        image={userAppointment.image}
+                        name={userAppointment.doctorId.name}
+                        image={userAppointment.doctorId.profilePicture}
                         date={userAppointment.date}
-                        address={userAppointment.address}
-                        isCancelled={userAppointment.isCancelled}
-                        specail={userAppointment.specail}
+                        address={userAppointment.doctorId.address}
+                        isCancelled={userAppointment.status === 'cancelled'}
+                        specail={userAppointment.doctorId.speciality}
                         index={index}
                     />
                 ))}

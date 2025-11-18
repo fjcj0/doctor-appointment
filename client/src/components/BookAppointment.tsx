@@ -1,5 +1,5 @@
 import { MessageSquareWarningIcon } from "lucide-react";
-import { blueTick, dates, times } from "../constants/data";
+import { blueTick, times } from "../constants/data";
 import type { doctorInformationProps } from "../global";
 import { useState } from "react";
 const BookAppointment = ({ image, name, degree, specail, year_experince, about, fees }: doctorInformationProps) => {
@@ -14,6 +14,27 @@ const BookAppointment = ({ image, name, degree, specail, year_experince, about, 
     const handleTimeSelect = (time: string) => {
         setSelectedTime(time);
     };
+    const getNextSixDays = () => {
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const dates = [];
+        let currentDate = new Date();
+        let daysAdded = 0;
+        while (daysAdded < 6) {
+            currentDate.setDate(currentDate.getDate() + 1);
+            const dayOfWeek = currentDate.getDay();
+            if (dayOfWeek !== 5) {
+                dates.push({
+                    day: currentDate.getDate().toString(),
+                    month: months[currentDate.getMonth()],
+                    dayName: days[dayOfWeek]
+                });
+                daysAdded++;
+            }
+        }
+        return dates;
+    };
+    const availableDates = getNextSixDays();
     return (
         <div className="grid font-nunito grid-cols-1 md:grid-cols-6 gap-3">
             <div className="md:col-span-2 h-[16rem] flex items-end justify-center bg-purple-1 hover:bg-purple-2 duration-300 transition-all rounded-2xl">
@@ -45,7 +66,7 @@ const BookAppointment = ({ image, name, degree, specail, year_experince, about, 
                 <div className="flex flex-col items-start justify-start my-5">
                     <h1 className="text-black/65 font-bold">Booking slots</h1>
                     <div className="flex flex-shrink-0 max-w-[95%] overflow-x-auto gap-3 my-3">
-                        {dates.map((date, index) => {
+                        {availableDates.map((date, index) => {
                             const dateString = `${date.day} ${date.month}`;
                             const isActive = selectedDate === dateString;
                             return (
@@ -54,12 +75,15 @@ const BookAppointment = ({ image, name, degree, specail, year_experince, about, 
                                     type="button"
                                     onClick={() => handleDateSelect(dateString)}
                                     className={`flex flex-col items-center justify-center px-4 py-3 rounded-full border-[0.5px] font-bold min-w-[70px] transition-all duration-300 ${isActive
-                                        ? 'bg-purple-1 border-purple-1 text-white'
-                                        : 'bg-transparent border-gray-500 hover:bg-purple-2'
+                                        ? 'bg-purple-2 border-purple-2 text-white'
+                                        : 'bg-transparent border-gray-500 text-black hover:bg-purple-2 hover:text-white'
                                         }`}
                                 >
                                     <span className="text-sm font-semibold">{date.day}</span>
                                     <span className="text-xs">{date.month}</span>
+                                    <span className={`text-xs mt-1 `}>
+                                        {date.dayName}
+                                    </span>
                                 </button>
                             );
                         })}
@@ -73,8 +97,8 @@ const BookAppointment = ({ image, name, degree, specail, year_experince, about, 
                                     type="button"
                                     onClick={() => handleTimeSelect(time)}
                                     className={`flex items-center justify-center text-sm py-3 px-4 rounded-full border-[0.5px] font-bold min-w-[100px] transition-all duration-300 whitespace-nowrap ${isActive
-                                        ? 'bg-purple-1 border-purple-1 text-white'
-                                        : 'bg-transparent border-gray-500 hover:bg-purple-2'
+                                        ? 'bg-purple-2 border-purple-2 text-white'
+                                        : 'bg-transparent border-gray-500 text-black hover:bg-purple-2 hover:text-white'
                                         }`}
                                 >
                                     {time}
@@ -88,8 +112,8 @@ const BookAppointment = ({ image, name, degree, specail, year_experince, about, 
                             type="button"
                             disabled={!selectedDate || !selectedTime}
                             className={`rounded-lg px-6 py-3 font-nunito font-bold duration-300 transition-all border-[0.5px] border-gray-300 text-base ${selectedDate && selectedTime
-                                ? 'bg-purple-1 hover:bg-purple-2 cursor-pointer'
-                                : 'bg-gray-300 cursor-not-allowed text-gray-500'
+                                ? 'bg-purple-2 hover:bg-blue-700   text-white cursor-pointer'
+                                : 'bg-purple-2/70 cursor-not-allowed text-gray-500'
                                 }`}
                         >
                             Book an appointment
