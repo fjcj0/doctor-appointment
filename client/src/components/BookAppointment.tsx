@@ -2,28 +2,60 @@ import { MessageSquareWarningIcon } from "lucide-react";
 import { blueTick, times } from "../constants/data";
 import type { doctorInformationProps } from "../global";
 import { useState } from "react";
-const BookAppointment = ({ image, name, degree, specail, year_experince, about, fees }: doctorInformationProps) => {
-    const onBook = async () => {
-        console.log("Booking appointment:", { selectedDate, selectedTime });
-    }
+import LoadingButton from "../tools/LoadingButton";
+import useUserStore from "../store/UserStore";
+
+const BookAppointment = ({
+    doctorId,
+    image,
+    name,
+    degree,
+    specail,
+    year_experince,
+    about,
+    fees
+}: doctorInformationProps & { doctorId: string }) => {
+
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [selectedTime, setSelectedTime] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const { createAppointment } = useUserStore();
+
     const handleDateSelect = (date: string) => {
         setSelectedDate(date);
     };
+
     const handleTimeSelect = (time: string) => {
         setSelectedTime(time);
     };
+
+    const handleCreatAppointment = async () => {
+        if (!selectedDate || !selectedTime) return;
+
+        setIsLoading(true);
+        try {
+            // Fixed: Properly concatenate date and time with a space
+            const appointmentDateTime = `${selectedDate} ${selectedTime}`;
+            await createAppointment(doctorId, appointmentDateTime, fees);
+        } catch (error) {
+            console.log(error instanceof Error ? error.message : error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     const getNextSixDays = () => {
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const dates = [];
         let currentDate = new Date();
         let daysAdded = 0;
+
         while (daysAdded < 6) {
             currentDate.setDate(currentDate.getDate() + 1);
             const dayOfWeek = currentDate.getDay();
-            if (dayOfWeek !== 5) {
+            if (dayOfWeek !== 5) { // Skip Friday (5)
                 dates.push({
                     day: currentDate.getDate().toString(),
                     month: months[currentDate.getMonth()],
@@ -34,37 +66,46 @@ const BookAppointment = ({ image, name, degree, specail, year_experince, about, 
         }
         return dates;
     };
+
     const availableDates = getNextSixDays();
+
     return (
         <div className="grid font-nunito grid-cols-1 md:grid-cols-6 gap-3">
             <div className="md:col-span-2 h-[16rem] flex items-end justify-center bg-purple-1 hover:bg-purple-2 duration-300 transition-all rounded-2xl">
-                <img src={image} className="w-60" />
+                <img src={image} className="w-60" alt={name} />
             </div>
             <div className="md:col-span-4">
                 <div className="flex flex-col py-10 px-5 border-[0.5px] border-black rounded-2xl">
-                    <div className=" mb-2 flex flex-col gap-2">
+                    <div className="mb-2 flex flex-col gap-2">
                         <h1 className="flex text-3xl text-black gap-2 items-center justify-start">
                             {name}
-                            <img src={blueTick} className="w-10" />
+                            <img src={blueTick} className="w-10" alt="Verified" />
                         </h1>
                         <h1 className="flex text-lg items-center gap-2 text-black justify-start">
                             <span className="flex items-center justify-center">
-                                {specail} -{degree}
+                                {specail} - {degree}
                             </span>
-                            <span className="px-4 text-xs py-2 border-[0.3px] border-gray-300 rounded-3xl">{year_experince}</span>
+                            <span className="px-4 text-xs py-2 border-[0.3px] border-gray-300 rounded-3xl">
+                                {year_experince}
+                            </span>
                         </h1>
                     </div>
-                    <div className=" mb-2 flex flex-col gap-2">
+                    <div className="mb-2 flex flex-col gap-2">
                         <h1 className="flex text-black items-center gap-2 justify-start">
                             About
                             <MessageSquareWarningIcon />
                         </h1>
                         <p className="text-black/50 text-sm">{about}</p>
                     </div>
-                    <p className="text-lg text-black/50 font-bold">Appointment fee: <span className="text-black">${fees}</span></p>
+                    <p className="text-lg text-black/50 font-bold">
+                        Appointment fee: <span className="text-black">${fees}</span>
+                    </p>
                 </div>
+
                 <div className="flex flex-col items-start justify-start my-5">
                     <h1 className="text-black/65 font-bold">Booking slots</h1>
+
+                    {/* Date Selection */}
                     <div className="flex flex-shrink-0 max-w-[95%] overflow-x-auto gap-3 my-3">
                         {availableDates.map((date, index) => {
                             const dateString = `${date.day} ${date.month}`;
@@ -81,13 +122,13 @@ const BookAppointment = ({ image, name, degree, specail, year_experince, about, 
                                 >
                                     <span className="text-sm font-semibold">{date.day}</span>
                                     <span className="text-xs">{date.month}</span>
-                                    <span className={`text-xs mt-1 `}>
-                                        {date.dayName}
-                                    </span>
+                                    <span className="text-xs mt-1">{date.dayName}</span>
                                 </button>
                             );
                         })}
                     </div>
+
+                    {/* Time Selection */}
                     <div className="flex flex-shrink-0 max-w-[95%] overflow-x-auto gap-3 my-3">
                         {times.map((time, index) => {
                             const isActive = selectedTime === time;
@@ -106,17 +147,19 @@ const BookAppointment = ({ image, name, degree, specail, year_experince, about, 
                             );
                         })}
                     </div>
+
+                    {/* Book Button */}
                     <div className="flex items-start justify-start my-3">
                         <button
-                            onClick={onBook}
+                            onClick={handleCreatAppointment} // Fixed: Use the correct function
                             type="button"
-                            disabled={!selectedDate || !selectedTime}
-                            className={`rounded-lg px-6 py-3 font-nunito font-bold duration-300 transition-all border-[0.5px] border-gray-300 text-base ${selectedDate && selectedTime
-                                ? 'bg-purple-2 hover:bg-blue-700   text-white cursor-pointer'
+                            disabled={!selectedDate || !selectedTime || isLoading}
+                            className={`rounded-lg px-6 py-3 font-nunito font-bold duration-300 transition-all border-[0.5px] border-gray-300 text-base ${selectedDate && selectedTime && !isLoading
+                                ? 'bg-purple-2 hover:bg-blue-700 text-white cursor-pointer'
                                 : 'bg-purple-2/70 cursor-not-allowed text-gray-500'
                                 }`}
                         >
-                            Book an appointment
+                            {isLoading ? <LoadingButton color={'blue-500'} /> : 'Book Appointment'}
                         </button>
                     </div>
                 </div>
@@ -124,4 +167,5 @@ const BookAppointment = ({ image, name, degree, specail, year_experince, about, 
         </div>
     );
 }
+
 export default BookAppointment;

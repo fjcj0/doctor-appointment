@@ -222,5 +222,29 @@ const useUserStore = create<UserStoreProps>((set, get) => ({
             }
         }
     },
+    createAppointment: async (doctorId: string, date: string, fees: number) => {
+        try {
+            const response = await axios.post(`${baseUrl}/user-create-appointment`, {
+                doctorId,
+                date,
+                fees
+            });
+            if (response.status) {
+                toast.success(`Appointment created sucessfully`);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data?.error) {
+                toast.error(error.response.data.error);
+                throw new Error(error.response.data.error);
+            } else if (error instanceof Error) {
+                toast.error(error.message);
+                throw error;
+            } else {
+                const errorMessage = 'An unknown error occurred';
+                toast.error(errorMessage);
+                throw new Error(errorMessage);
+            }
+        }
+    },
 }));
 export default useUserStore;

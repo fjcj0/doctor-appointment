@@ -40,6 +40,7 @@ export interface AppointmentTableProps {
     onConfirm?: () => Promise<void>;
 }
 export type DoctorInformationType = {
+    _id: string,
     experience: string;
     name: string,
     profilePicture: string,
@@ -114,4 +115,5 @@ export interface UserStoreProps {
     ) => Promise<void>,
     getUserAppointments: () => Promise<void>,
     cancelAppointment: (appointmentId: string) => Promise<void>,
+    createAppointment: (doctorId: string, date: string, fees: number) => Promise<void>,
 }

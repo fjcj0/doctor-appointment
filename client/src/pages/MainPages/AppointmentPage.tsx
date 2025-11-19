@@ -41,6 +41,7 @@ const AppointmentPage = () => {
     return (
         <section className="my-10">
             <BookAppointment
+                doctorId={doctor._id}
                 name={doctor.name}
                 specail={doctor.speciality}
                 year_experince={doctor.experience}

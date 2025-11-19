@@ -26,6 +26,20 @@ export const createAppointment = async (request, response) => {
                 error: 'Doctor not found'
             });
         }
+        const curAppointment = await Appointment.findOne({
+            doctorId: doctorId,
+            userId: request.userId,
+            status: { $in: ['pending'] }
+        });
+        if (curAppointment) {
+            return response.status(400).json({
+                success: false,
+                error: `Cannot create appointment. You already have a ${curAppointment.status} appointment with this doctor.`
+            });
+        }
+        await removeCache(`appointments-user-${request.userId}`);
+        await removeCache(`appointments-doctors-${doctorId}`);
+        await removeCache(`latest-appointments-doctors-${doctorId}`);
         const appointment = new Appointment({
             doctorId,
             userId: request.userId,
@@ -33,13 +47,15 @@ export const createAppointment = async (request, response) => {
             fees
         });
         await appointment.save();
-        await removeCache(`appointments-user-${request.userId}`);
-        await removeCache(`appointments-doctors-${doctorId}`);
-        await removeCache(`latest-appointments-doctors-${doctorId}`);
+        const populatedAppointment = await Appointment.findById(appointment._id)
+            .populate({
+                path: 'doctorId',
+                select: 'name speciality address profilePicture'
+            });
         return response.status(201).json({
             success: true,
             message: 'Appointment has been created successfully!!',
-            appointment
+            appointment: populatedAppointment
         });
     } catch (error) {
         console.log(error instanceof Error ? error.message : error);
@@ -181,21 +197,21 @@ export const userAppointments = async (request, response) => {
         let userAppointments = cache.get(cacheKey);
         if (!userAppointments) {
             userAppointments = await Appointment.find({ userId: request.userId })
-                .populate('doctorId', ['name', 'speciality', 'address', 'profilePicture'])
+                .populate({
+                    path: 'doctorId',
+                    select: 'name speciality address profilePicture',
+                })
                 .select(['_id', 'doctorId', 'date', 'fees', 'status', 'payment', 'createdAt'])
-                .sort({ createdAt: -1 });
+                .sort({ createdAt: -1 })
+                .lean();
             cache.set(cacheKey, userAppointments, 300);
-            return response.status(200).json({
-                success: true,
-                userAppointments
-            });
         }
         return response.status(200).json({
             success: true,
             userAppointments
         });
     } catch (error) {
-        console.log(error instanceof Error ? error.message : error);
+        console.log('Error in userAppointments:', error instanceof Error ? error.message : error);
         return response.status(500).json({
             success: false,
             error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
