@@ -3,6 +3,7 @@ import type { cardUserProps } from "../../global";
 import { Button } from "./Button";
 import { motion } from 'framer-motion';
 import useUserStore from "../../store/UserStore";
+import axios from "axios";
 const CardUserAppointments = ({
     appointmentId,
     image,
@@ -19,8 +20,37 @@ const CardUserAppointments = ({
     const [isCancel, setIsCancel] = useState(false);
     const [isAccept, setIsAccept] = useState(false);
     const { cancelAppointment } = useUserStore();
+    const appointment = {
+        appointmentId,
+        doctorId,
+        image,
+        name,
+        specail,
+        address,
+        date,
+        fees,
+    }
     const handlePay = async () => {
-
+        if (!fees || fees <= 0) {
+            alert('Invalid appointment fee. Please contact support.');
+            return;
+        }
+        setIsAccept(true);
+        try {
+            const response = await axios.post('http://localhost:2340/create-checkout-session', appointment);
+            if (response.status == 200) {
+                window.location.href = response.data.url;
+            }
+        } catch (error: any) {
+            console.error('Payment error:', error);
+            if (error.response?.data?.error) {
+                alert(`Payment failed: ${error.response.data.error}`);
+            } else {
+                alert('Payment failed. Please try again.');
+            }
+        } finally {
+            setIsAccept(false);
+        }
     }
     const handleCancel = async () => {
         setIsCancel(true);
@@ -64,6 +94,8 @@ const CardUserAppointments = ({
                     <p className="text-black/50">{specail}</p>
                     <p className="flex gap-2 text-black">Address: <span className="text-black/50">{address}</span></p>
                     <p className="flex gap-2 text-black">Date & Time: <span className="text-black/50">{date}</span></p>
+                    <p className="flex gap-2 text-black">Fees: <span className="text-black/50">${fees}</span></p>
+
                 </div>
             </div>
             <div>
