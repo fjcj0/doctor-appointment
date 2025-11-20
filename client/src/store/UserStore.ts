@@ -246,5 +246,79 @@ const useUserStore = create<UserStoreProps>((set, get) => ({
             }
         }
     },
+    sendEmailReturnPassword: async (email: string) => {
+        set({ isLoading: true });
+        try {
+            const response = await axios.post(`${baseUrl}/api/user-auth/forget-password`, {
+                email
+            });
+            if (response.status == 200) {
+                toast.success(`Check code on your email: ${email}`);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data?.error) {
+                toast.error(error.response.data.error);
+                throw new Error(error.response.data.error);
+            } else if (error instanceof Error) {
+                toast.error(error.message);
+                throw error;
+            } else {
+                const errorMessage = 'An unknown error occurred';
+                toast.error(errorMessage);
+                throw new Error(errorMessage);
+            }
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    checkCode: async (code: string) => {
+        set({ isLoading: true });
+        try {
+            const response = await axios.post(`${baseUrl}/api/user-auth/get-code-reset-password`, {
+                code
+            });
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data?.error) {
+                toast.error(error.response.data.error);
+                throw new Error(error.response.data.error);
+            } else if (error instanceof Error) {
+                toast.error(error.message);
+                throw error;
+            } else {
+                const errorMessage = 'An unknown error occurred';
+                toast.error(errorMessage);
+                throw new Error(errorMessage);
+            }
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+    resetPassword: async (code: string, password: string) => {
+        set({ isLoading: true });
+        try {
+            const response = await axios.post(`${baseUrl}/api/user-auth/reset-password`, {
+                token: code,
+                password
+            });
+            if (response.status == 200) {
+                toast.success(`Your password has been changed sucessfully`);
+                set({ user: response.data.user });
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data?.error) {
+                toast.error(error.response.data.error);
+                throw new Error(error.response.data.error);
+            } else if (error instanceof Error) {
+                toast.error(error.message);
+                throw error;
+            } else {
+                const errorMessage = 'An unknown error occurred';
+                toast.error(errorMessage);
+                throw new Error(errorMessage);
+            }
+        } finally {
+            set({ isLoading: false });
+        }
+    }
 }));
 export default useUserStore;

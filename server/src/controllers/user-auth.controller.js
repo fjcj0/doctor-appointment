@@ -234,6 +234,34 @@ export const forgotPassword = async (request, response) => {
         });
     }
 }
+export const getCodeResetPassword = async (request, response) => {
+    try {
+        const { code } = request.body;
+        if (!code) {
+            return response.status(400).json({
+                success: false,
+                error: 'Code is required'
+            });
+        }
+        const user = await User.findOne({ resetPasswordToken: code });
+        if (!user) {
+            return response.status(400).json({
+                success: false,
+                error: 'Code invaild or maybe is expired'
+            });
+        }
+        return response.status(200).json({
+            success: true,
+            message: 'Code is valid'
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            success: false,
+            error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+        });
+    }
+}
 export const resetPassword = async (request, response) => {
     try {
         const { token, password } = request.body;
@@ -256,7 +284,15 @@ export const resetPassword = async (request, response) => {
         return response.status(200).json(
             {
                 success: true,
-                message: 'Password has been changed successfully!!'
+                message: 'Password has been changed successfully!!',
+                user: {
+                    ...user._doc,
+                    password: undefined,
+                    resetPasswordToken: undefined,
+                    verificationToken: undefined,
+                    verificationTokenExpiresAt: undefined,
+                    resetPasswordExpiresAt: undefined
+                }
             });
     } catch (error) {
         console.log(error instanceof Error ? error.message : error);

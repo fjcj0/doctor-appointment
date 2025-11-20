@@ -116,4 +116,7 @@ export interface UserStoreProps {
     getUserAppointments: () => Promise<void>,
     cancelAppointment: (appointmentId: string) => Promise<void>,
     createAppointment: (doctorId: string, date: string, fees: number) => Promise<void>,
+    sendEmailReturnPassword: (email: string) => Promise<void>,
+    checkCode: (code: string) => Promise<void>,
+    resetPassword: (code: string, password: string) => Promise<void>,
 }

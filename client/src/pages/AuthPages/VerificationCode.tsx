@@ -7,13 +7,12 @@ import { ArrowLeft } from "lucide-react";
 import LoaderPage from "../../components/LoaderPage";
 import { useNavigate } from "react-router";
 import useUserStore from "../../store/UserStore";
-import toast from "react-hot-toast";
 const VerificationCode = ({ email, setPendingVerification, isResetPassword }: {
     email: string;
     setPendingVerification: (value: boolean) => void;
     isResetPassword: boolean;
 }) => {
-    const { isLoading, verifyEmail } = useUserStore();
+    const { isLoading, verifyEmail, checkCode } = useUserStore();
     const navigate = useNavigate();
     const [code, setCode] = useState('');
     const [errorCode, setErrorCode] = useState('');
@@ -40,7 +39,12 @@ const VerificationCode = ({ email, setPendingVerification, isResetPassword }: {
             return;
         }
         if (isResetPassword == true) {
-            navigate(`/reset-password/${code}`);
+            try {
+                await checkCode(code);
+                navigate(`/reset-password/${code}`);
+            } catch (error) {
+                console.log(error instanceof Error ? error.message : error);
+            }
         }
         else {
             try {

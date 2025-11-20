@@ -1,26 +1,42 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Page404 from "../../components/Page404";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import LoaderPage from "../../components/LoaderPage";
 import FullScreenTsx from "../../tools/FullScreenTsx";
 import FloatInput from "../../components/ui/FloatInput";
 import { ArrowLeft } from "lucide-react";
 import ButtonAuth from "../../components/ui/ButtonAuth";
 import SecurityAnimation from "../../components/SecurityAnimation";
+import useUserStore from "../../store/UserStore";
+import toast from "react-hot-toast";
 const RestPasswordPage = () => {
-    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+    const { isLoading, resetPassword, checkCode } = useUserStore();
+    const [isPageLoading, setIsPageLoading] = useState(true);
+    const [isCodeValid, setIsCodeValid] = useState(false);
     const [password, setPassword] = useState('');
     const [errorPassword, setErrorPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errorConfirmPassword, setErrorConfirmPassword] = useState('');
-    const param = useParams();
-    const { code } = param;
-    if (isLoading) {
-        return <LoaderPage />;
-    }
-    if (!code) {
-        return <Page404 />;
-    }
+    const params = useParams();
+    const { code } = params;
+    const onCheckCode = useCallback(async () => {
+        if (!code) {
+            setIsPageLoading(false);
+            return;
+        }
+        setIsPageLoading(true);
+        try {
+            await checkCode(code);
+            toast.success(`Code is true change your password`);
+            setIsCodeValid(true);
+        } catch (error) {
+            console.error('Code validation error:', error);
+            setIsCodeValid(false);
+        } finally {
+            setIsPageLoading(false);
+        }
+    }, [code, checkCode]);
     const handleChangePassword = async () => {
         setErrorPassword('');
         setErrorConfirmPassword('');
@@ -40,18 +56,21 @@ const RestPasswordPage = () => {
             setErrorConfirmPassword('Passwords do not match');
             return;
         }
-        setIsLoading(true);
         try {
-            console.log('Password reset logic would go here with code:', code);
-            setTimeout(() => {
-                console.log('Password reset successful');
-                setIsLoading(false);
-            }, 1000);
-
+            await resetPassword(code!, password);
+            navigate('/login');
         } catch (error) {
             setErrorPassword('Failed to reset password. Please try again.');
-            setIsLoading(false);
         }
+    };
+    useEffect(() => {
+        onCheckCode();
+    }, [onCheckCode]);
+    if (isPageLoading) {
+        return <LoaderPage />;
+    }
+    if (!code || !isCodeValid) {
+        return <Page404 />;
     }
     return (
         <FullScreenTsx>
@@ -77,6 +96,7 @@ const RestPasswordPage = () => {
                     <ButtonAuth
                         text={isLoading ? "Resetting..." : "Reset Password"}
                         onPress={handleChangePassword}
+                        isLoading={isLoading}
                     />
                 </div>
                 <div className="w-full mt-3 flex items-start justify-start">
@@ -85,11 +105,13 @@ const RestPasswordPage = () => {
                         className="flex items-center justify-center gap-x-[1px]"
                     >
                         <ArrowLeft size={18} />
-                        <p className="text-black font-bold text-xs font-poppins border-b border-transparent hover:border-b-black duration-300 transition-all">Back to login page</p>
+                        <p className="text-black font-bold text-xs font-poppins border-b border-transparent hover:border-b-black duration-300 transition-all">
+                            Back to login page
+                        </p>
                     </Link>
                 </div>
             </div>
         </FullScreenTsx>
     );
-}
+};
 export default RestPasswordPage;

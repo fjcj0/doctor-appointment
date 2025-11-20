@@ -7,7 +7,9 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from "react-router-dom";
 import VerificationCode from "./VerificationCode";
 import LoaderPage from "../../components/LoaderPage";
+import useUserStore from "../../store/UserStore";
 const ForgetPassword = () => {
+    const { isLoading, sendEmailReturnPassword } = useUserStore();
     const [email, setEmail] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
     const [pendingVerification, setPendingVerification] = useState<boolean>(false);
@@ -46,7 +48,12 @@ const ForgetPassword = () => {
             setErrorEmail('Email is not valid');
             return;
         }
-        setPendingVerification(true);
+        try {
+            await sendEmailReturnPassword(email);
+            setPendingVerification(true);
+        } catch (error: unknown) {
+            console.log(error instanceof Error ? error.message : error);
+        }
     };
     if (isLoadingPage) {
         return <LoaderPage />;
@@ -76,6 +83,7 @@ const ForgetPassword = () => {
                     <ButtonAuth
                         text="Send Code"
                         onPress={handleClick}
+                        isLoading={isLoading}
                     />
                 </div>
                 <div className="w-full mt-3 flex items-start justify-start">
