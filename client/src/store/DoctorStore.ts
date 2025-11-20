@@ -75,6 +75,7 @@ const useDoctorStore = create<DoctorStoreProps>((set, get) => ({
         }
     },
     updateDoctor: async (name: string, speciality: string, degree: string, address: string, image: string, experience: string, fees: number, about: string, available: boolean) => {
+        set({ isLoading: true });
         try {
             const response = await axios.put(`${baseUrl}/api/doctor-auth/update-doctor`, {
                 name,
@@ -103,6 +104,8 @@ const useDoctorStore = create<DoctorStoreProps>((set, get) => ({
                 toast.error(errorMessage);
                 throw new Error(errorMessage);
             }
+        } finally {
+            set({ isLoading: false });
         }
     },
     logoutDoctor: async () => {

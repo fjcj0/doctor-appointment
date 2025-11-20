@@ -2,7 +2,7 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 import toast from "react-hot-toast";
 const baseUrl = import.meta.env.NODE_ENV == 'production' ? '' : 'http://localhost:2340';
-export const uploadImage = async (image: File) => {
+export const uploadImage = async (image: File): Promise<void | string> => {
     try {
         const formData = new FormData();
         formData.append('image', image);
