@@ -18,12 +18,6 @@ const DoctorAppointmentsPage = () => {
     if (isLoading) {
         return <LoaderDashboard />;
     }
-    const onCancel = async () => {
-        console.log('Cancelled');
-    }
-    const onConfirm = async () => {
-        console.log('Confirmed');
-    }
     return (
         <div className="p-6 font-nunito">
             <h1 className="text-xl font-bold text-gray-800 mb-6">Appointments</h1>
@@ -48,8 +42,8 @@ const DoctorAppointmentsPage = () => {
                                 fee={appointment.fees}
                                 status={appointment.status}
                                 date={appointment.date}
-                                onCancel={onCancel}
-                                onConfirm={onConfirm}
+                                appointmentId={appointment._id}
+                                isAdmin={false}
                             />
                         ))}
                     </div>

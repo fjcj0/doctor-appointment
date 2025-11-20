@@ -13,6 +13,16 @@ const useDoctorStore = create<DoctorStoreProps>((set, get) => ({
     appointments: 0,
     doctorAppointments: [],
     doctorAppointmentsLimited: [],
+    updateAppointmentStatus: (appointmentId: string, newStatus: string) => {
+        set((state) => ({
+            doctorAppointments: state.doctorAppointments.map(apt =>
+                apt._id === appointmentId ? { ...apt, status: newStatus } : apt
+            ),
+            doctorAppointmentsLimited: state.doctorAppointmentsLimited.map(apt =>
+                apt._id === appointmentId ? { ...apt, status: newStatus } : apt
+            )
+        }));
+    },
     checkDoctorAuth: async () => {
         set({ isCheckingDoctorVerify: true });
         try {
@@ -112,6 +122,7 @@ const useDoctorStore = create<DoctorStoreProps>((set, get) => ({
         try {
             await axios.post(`${baseUrl}/api/doctor-auth/logout-doctor`);
             set({ doctor: null, isDoctorVerified: false });
+            toast.success(`Doctor logout sucessfully`)
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
                 toast.error(error.response.data.error);
@@ -133,6 +144,9 @@ const useDoctorStore = create<DoctorStoreProps>((set, get) => ({
             });
             if (response.status === 200) {
                 toast.success(`Appointment accepted sucessfully`);
+                get().updateAppointmentStatus(appointmentId, 'completed');
+                if (get().patients != 0)
+                    set({ patients: (get().patients || 1) - 1 });
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
@@ -155,6 +169,9 @@ const useDoctorStore = create<DoctorStoreProps>((set, get) => ({
             });
             if (response.status === 200) {
                 toast.success(`Appointment cancelled sucessfully`);
+                get().updateAppointmentStatus(appointmentId, 'cancelled');
+                if (get().patients != 0)
+                    set({ patients: (get().patients || 1) - 1 });
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {

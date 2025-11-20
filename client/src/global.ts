@@ -36,8 +36,6 @@ export interface AppointmentTableProps {
     status: string;
     doctor?: string,
     doctorImage?: string,
-    onCancel: () => Promise<void>;
-    onConfirm?: () => Promise<void>;
 }
 export type DoctorInformationType = {
     _id: string,
@@ -177,4 +175,5 @@ export interface DoctorStoreProps {
     doctorCancelAppointment: (appointmentId: string) => Promise<void>,
     getNumberOfAppointments: () => Promise<void>,
     getNumberOfPatients: () => Promise<void>,
+    updateAppointmentStatus: (appointmentId: string, newStatus: string) => void,
 }

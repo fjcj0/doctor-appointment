@@ -58,7 +58,7 @@ const RedirectAuthenticatedUser = ({ children }: { children: ReactNode }) => {
     );
   }
   if (isVerified) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard-doctor" replace />;
   }
   return <>{children}</>;
 };

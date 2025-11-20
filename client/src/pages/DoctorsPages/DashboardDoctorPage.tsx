@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import CardDashboard from "../../components/ui/CardDashboard";
 import Table from "../../components/ui/Table";
-import { dataCardDashboardDoctor } from "../../constants/data";
 import { DollarSign, ListIcon } from "lucide-react";
 import LoaderDashboard from "../../tools/LoaderDashboard";
 import useDoctorStore from "../../store/DoctorStore";
@@ -61,6 +60,7 @@ const DashboardDoctorPage = () => {
                         {doctorAppointmentsLimited.map((booking, index) => (
                             <Table
                                 key={index}
+                                appointmentId={booking._id}
                                 name={booking.userId.name}
                                 date={booking.date}
                                 image={booking.userId.profilePicture}

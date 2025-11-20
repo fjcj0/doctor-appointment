@@ -8,7 +8,9 @@ import LoaderPage from "../../components/LoaderPage";
 import { circleIcon } from "../../constants/data";
 import type { LoginStatusProp } from "../../global";
 import useDoctorStore from "../../store/DoctorStore";
+import { useNavigate } from "react-router";
 const LoginDoctorOrAdminPage = () => {
+    const navigate = useNavigate();
     const { loginDoctor, isLoading } = useDoctorStore();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -60,6 +62,7 @@ const LoginDoctorOrAdminPage = () => {
         if (!hasError) {
             if (loginStatus === 'doctor') {
                 await loginDoctor(email, password);
+                navigate('/dashboard-doctor');
             } else if (loginStatus === 'admin') {
 
             }

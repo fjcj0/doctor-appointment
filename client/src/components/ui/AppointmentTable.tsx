@@ -1,5 +1,7 @@
 import { CheckIcon, XIcon } from "lucide-react";
 import type { AppointmentTableProps } from "../../global";
+import { useState } from "react";
+import useDoctorStore from "../../store/DoctorStore";
 const AppointmentTable = ({
     patient,
     image,
@@ -10,9 +12,36 @@ const AppointmentTable = ({
     status,
     doctor,
     doctorImage,
-    onCancel,
-    onConfirm
-}: AppointmentTableProps) => {
+    isAdmin,
+    appointmentId
+}: AppointmentTableProps & { isAdmin: boolean, appointmentId: string }) => {
+    const { doctorCancelAppointment, doctorAcceptAppointment } = useDoctorStore();
+    const [isCancelling, setIsCancelling] = useState(false);
+    const [isAccepting, setIsAccepting] = useState(false);
+    const handleCancel = async () => {
+        if (!isAdmin) {
+            setIsCancelling(true);
+            try {
+                await doctorCancelAppointment(appointmentId);
+            } catch (error) {
+                console.log(error instanceof Error ? error.message : error);
+            } finally {
+                setIsCancelling(false);
+            }
+        } else {
+
+        }
+    }
+    const handleAceept = async () => {
+        setIsAccepting(true);
+        try {
+            await doctorAcceptAppointment(appointmentId);
+        } catch (error) {
+            console.log(error instanceof Error ? error.message : error);
+        } finally {
+            setIsAccepting(false);
+        }
+    }
     return (
         <div className="grid grid-cols-7 gap-5 items-center py-4 px-2 text-xs border-b border-gray-200 hover:bg-gray-50 transition-colors min-w-[800px]">
             <div className="flex items-center gap-2">
@@ -39,20 +68,23 @@ const AppointmentTable = ({
                 {status === 'pending' ? (
                     <div className="flex items-center gap-2">
                         <button
+                            onClick={handleCancel}
                             type="button"
-                            className="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors"
+                            disabled={isCancelling}
+                            className={`w-8 h-8 bg-red-50 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors ${isCancelling && 'opacity-50'}`}
                         >
                             <XIcon size={16} className="text-red-500" />
                         </button>
                         {
                             !doctor && <button
+                                onClick={handleAceept}
+                                disabled={isAccepting}
                                 type="button"
-                                className="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center hover:bg-green-100 transition-colors"
+                                className={`w-8 h-8 bg-green-50 rounded-full flex items-center justify-center hover:bg-green-100 transition-colors ${isAccepting && 'opacity-50'}`}
                             >
                                 <CheckIcon size={16} className="text-green-500" />
                             </button>
                         }
-
                     </div>
                 ) : (
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${status === 'completed'
