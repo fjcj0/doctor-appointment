@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import AppointmentTable from "../../components/ui/AppointmentTable";
-import { appointments } from "../../constants/data";
 import LoaderDashboard from "../../tools/LoaderDashboard";
+import useDoctorStore from "../../store/DoctorStore";
+import { calculateAge } from "../../utils/calculateAge";
 const DoctorAppointmentsPage = () => {
-    const [isLoading, setIsLoading] = useState(true);
+    const { getDoctorAppointments, doctorAppointments, isLoading } = useDoctorStore();
+    const handleData = async () => {
+        try {
+            await getDoctorAppointments();
+        } catch (error) {
+            console.log(error instanceof Error ? error.message : error);
+        }
+    }
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 3000);
-        return () => clearTimeout(timer);
+        handleData();
     }, []);
     if (isLoading) {
         return <LoaderDashboard />;
@@ -33,16 +38,16 @@ const DoctorAppointmentsPage = () => {
                         <p className="text-center">Action</p>
                     </div>
                     <div className="bg-white rounded-b-lg shadow-sm border border-gray-200">
-                        {appointments.map((appointment, index) => (
+                        {doctorAppointments.map((appointment, index) => (
                             <AppointmentTable
                                 key={index}
-                                patient={appointment.pateint}
-                                image={appointment.image}
+                                patient={appointment.userId.name}
+                                image={appointment.userId.profilePicture}
                                 payment={appointment.payment}
-                                age={appointment.age}
-                                fee={appointment.Fee}
+                                age={calculateAge(appointment.userId.birthday)}
+                                fee={appointment.fees}
                                 status={appointment.status}
-                                date={appointment.Date}
+                                date={appointment.date}
                                 onCancel={onCancel}
                                 onConfirm={onConfirm}
                             />

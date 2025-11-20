@@ -32,7 +32,7 @@ export interface AppointmentTableProps {
     payment: string;
     age: number;
     date: string;
-    fee: string;
+    fee: number;
     status: string;
     doctor?: string,
     doctorImage?: string,
@@ -119,4 +119,62 @@ export interface UserStoreProps {
     sendEmailReturnPassword: (email: string) => Promise<void>,
     checkCode: (code: string) => Promise<void>,
     resetPassword: (code: string, password: string) => Promise<void>,
+}
+export type DoctorType = {
+    _id: string,
+    profilePicture: string,
+    name: string,
+    experience: string,
+    fees: number,
+    address: string,
+    speciality: 'General Physician' | 'Cardiologist' | 'Neurologist' | 'Pediatrician' | 'Orthopedic Surgeon' | 'Dermatologist',
+    about: string,
+    available: boolean,
+    degree: string,
+    earning: number,
+} | null;
+export type DoctorAppointment = {
+    _id: string,
+    userId: {
+        _id: string,
+        name: string,
+        profilePicture: string,
+        birthday: string
+    },
+    status: string,
+    date: string,
+    fees: number,
+    payment: string
+}
+export type doctorAppointmentLimited = {
+    _id: string,
+    userId: {
+        _id: string,
+        name: string,
+        profilePicture: string,
+    },
+    status: string,
+    date: string,
+    fees: number,
+    payment: string
+}
+export interface DoctorStoreProps {
+    isDoctorVerified: boolean,
+    isCheckingDoctorVerify: boolean,
+    isLoading: boolean,
+    doctor: DoctorType,
+    patients: number,
+    appointments: number,
+    doctorAppointments: DoctorAppointment[],
+    doctorAppointmentsLimited: doctorAppointmentLimited[],
+    checkDoctorAuth: () => Promise<void>,
+    getDoctorAppointments: () => Promise<void>,
+    getDoctorAppointmentsLimited: () => Promise<void>,
+    loginDoctor: (email: string, password: string) => Promise<void>,
+    updateDoctor: (name: string, speciality: string, degree: string, address: string, image: string, experience: string, fees: number, about: string, available: boolean) => Promise<void>,
+    logoutDoctor: () => Promise<void>,
+    doctorAcceptAppointment: (appointmentId: string) => Promise<void>,
+    doctorCancelAppointment: (appointmentId: string) => Promise<void>,
+    getNumberOfAppointments: () => Promise<void>,
+    getNumberOfPatients: () => Promise<void>,
 }

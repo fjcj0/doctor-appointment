@@ -1,40 +1,22 @@
 import { useEffect, useState } from "react";
 import Input from "../../components/ui/Input";
-import { doctorInformation } from "../../constants/data";
 import { Edit } from "lucide-react";
 import LoaderDashboard from "../../tools/LoaderDashboard";
+import useDoctorStore from "../../store/DoctorStore";
+type Specialization = 'General Physician' | 'Cardiologist' | 'Neurologist' | 'Pediatrician' | 'Orthopedic Surgeon' | 'Dermatologist';
 const ProfileDoctorPage = () => {
-    const [name, setName] = useState(doctorInformation.name);
-    const [graduation, setGraduation] = useState('MBBS');
-    const [specialization, setSpecialization] = useState('');
-    const [about, setAbout] = useState(doctorInformation.about);
-    const [experienceYears, setExperienceYears] = useState(doctorInformation.year_experince);
-    const [fee, setFee] = useState(parseFloat(doctorInformation.fee.slice(1)));
-    const [firstAddress, setFirstAddress] = useState('24 Main Street');
-    const [secondAddress, setSecondAddress] = useState('10 clause read');
-    const [isAvailable, setIsAvailable] = useState(false);
+    const { doctor } = useDoctorStore();
+    const [name, setName] = useState(doctor?.name);
+    const [graduation, setGraduation] = useState(doctor?.degree);
+    const [specialization, setSpecialization] = useState<Specialization | undefined>(doctor?.speciality as Specialization | undefined);
+    const [about, setAbout] = useState(doctor?.about);
+    const [experienceYears, setExperienceYears] = useState(doctor?.experience);
+    const [fee, setFee] = useState(doctor?.fees);
+    const [address, setAddress] = useState(doctor?.address);
+    const [isAvailable, setIsAvailable] = useState(doctor?.available);
     const [isLoading, setIsLoading] = useState(true);
-    const specializations = [
-        "Cardiology",
-        "Dermatology",
-        "Neurology",
-        "Pediatrics",
-        "Orthopedics",
-        "Gynecology",
-        "Psychiatry",
-        "Endocrinology",
-        "Gastroenterology",
-        "Ophthalmology",
-        "Radiology",
-        "Surgery",
-        "Internal Medicine",
-        "Emergency Medicine",
-        "Family Medicine",
-        "Anesthesiology",
-        "Pathology",
-        "Oncology",
-        "Urology",
-        "ENT"
+    const specializations: Specialization[] = [
+        'General Physician', 'Cardiologist', 'Neurologist', 'Pediatrician', 'Orthopedic Surgeon', 'Dermatologist'
     ];
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -50,7 +32,7 @@ const ProfileDoctorPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-7 gap-3">
                 <div className="md:col-span-2">
                     <button type="button" className="relative flex items-center justify-center bg-blue-2/55 hover:bg-blue-2 rounded-xl duration-300 transition-all">
-                        <img src={doctorInformation.image} />
+                        <img src={doctor?.profilePicture} />
                         <div className="absolute top-1 right-1">
                             <Edit size={20} color='white' />
                         </div>
@@ -74,7 +56,7 @@ const ProfileDoctorPage = () => {
                             placeholder="Years of Experience"
                             onChange={(e) => setExperienceYears(e.target.value)}
                             value={experienceYears}
-                            type="number"
+                            type="text"
                         />
                         <Input
                             placeholder="Consultation Fee"
@@ -82,24 +64,20 @@ const ProfileDoctorPage = () => {
                             value={fee}
                             type="number"
                         />
-                        <Input
-                            placeholder="Primary Address"
-                            onChange={(e) => setFirstAddress(e.target.value)}
-                            value={firstAddress}
-                            type="text"
-                        />
-                        <Input
-                            placeholder="Secondary Address"
-                            onChange={(e) => setSecondAddress(e.target.value)}
-                            value={secondAddress}
-                            type="text"
-                        />
                     </div>
                     <div className="flex flex-col mt-3">
+                        <Input
+                            placeholder="Primary Address"
+                            onChange={(e) => setAddress(e.target.value)}
+                            value={address}
+                            type="text"
+                        />
                         <select
                             value={specialization}
-                            onChange={(e) => setSpecialization(e.target.value)}
-                            className="w-full px-4 py-2 font-nunito text-xs text-black focus:text-blue-2 rounded-lg border-[0.5px] border-gray-400 focus:border-blue-2 bg-white"
+                            onChange={(e) => {
+                                setSpecialization(e.target.value as Specialization)
+                            }}
+                            className="w-full px-4 py-2 mt-3 font-nunito text-xs text-black focus:text-blue-2 rounded-lg border-[0.5px] border-gray-400 focus:border-blue-2 bg-white"
                         >
                             <option value="">Select Specialization</option>
                             {specializations.map((spec) => (

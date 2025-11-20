@@ -7,7 +7,9 @@ import ButtonAuth from "../../components/ui/ButtonAuth";
 import LoaderPage from "../../components/LoaderPage";
 import { circleIcon } from "../../constants/data";
 import type { LoginStatusProp } from "../../global";
+import useDoctorStore from "../../store/DoctorStore";
 const LoginDoctorOrAdminPage = () => {
+    const { loginDoctor, isLoading } = useDoctorStore();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
@@ -56,7 +58,11 @@ const LoginDoctorOrAdminPage = () => {
             hasError = true;
         }
         if (!hasError) {
-            console.log('Login successful', { email, password, loginStatus });
+            if (loginStatus === 'doctor') {
+                await loginDoctor(email, password);
+            } else if (loginStatus === 'admin') {
+
+            }
         }
     };
     const handleEmailChange = (value: string) => {
@@ -104,7 +110,7 @@ const LoginDoctorOrAdminPage = () => {
                         />
                     </div>
                     <div className="w-full flex items-center justify-between">
-                        <ButtonAuth text="Sign In" onPress={handleClick} isLoading={false} />
+                        <ButtonAuth text="Sign In" onPress={handleClick} isLoading={isLoading} />
                         <button
                             type="button"
                             className="font-poppins text-xs hover:underline duration-300 transition-all flex items-center justify-center gap-1"

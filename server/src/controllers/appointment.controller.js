@@ -253,7 +253,7 @@ export const totalPatientsForDoctor = async (request, response) => {
         }
         const totalPatientsForDoctor = await Appointment.distinct('userId', {
             doctorId: request.doctorId,
-            status: { $in: ['pending', 'completed'] }
+            status: { $in: ['pending'] }
         });
         return response.status(200).json({
             success: true,
@@ -285,8 +285,7 @@ export const latestDoctorAppointments = async (request, response) => {
                 })
                 .select(['_id', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
                 .sort({ createdAt: -1 })
-                .limit(10);
-
+                .limit(10).lean();
             cache.set(cacheKey, doctorAppointmentsLimited, 300);
         }
         return response.status(200).json({
@@ -315,19 +314,21 @@ export const doctorAppointments = async (request, response) => {
             doctorAppointments = await Appointment.find({ doctorId: request.doctorId })
                 .populate({
                     path: 'userId',
-                    select: 'name profilePicture'
+                    select: 'name profilePicture birthday'
                 })
                 .select(['_id', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
-                .sort({ createdAt: -1 });
-
+                .sort({ createdAt: -1 })
+                .lean();
             cache.set(cacheKey, doctorAppointments, 300);
+        } else {
+            console.log('Data retrieved from cache:', doctorAppointments);
         }
         return response.status(200).json({
             success: true,
             doctorAppointments
         });
     } catch (error) {
-        console.log(error instanceof Error ? error.message : error);
+        console.log('Error in doctorAppointments:', error instanceof Error ? error.message : error);
         return response.status(500).json({
             success: false,
             error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
@@ -571,8 +572,7 @@ export const latestAppointmentsForDoctors = async (request, response) => {
                 })
                 .select(['_id', 'doctorId', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
                 .sort({ createdAt: -1 })
-                .limit(10);
-
+                .limit(10).lean();
             cache.set(cacheKey, appointmentsLimited, 300);
         }
         return response.status(200).json({
@@ -607,8 +607,7 @@ export const appointments = async (request, response) => {
                     select: 'name profilePicture speciality'
                 }])
                 .select(['_id', 'userId', 'doctorId', 'payment', 'date', 'fees', 'status', 'createdAt'])
-                .sort({ createdAt: -1 });
-
+                .sort({ createdAt: -1 }).lean();
             cache.set(cacheKey, allAppointments, 300);
         }
         return response.status(200).json({

@@ -29,6 +29,7 @@ import Page404 from './components/Page404';
 import RestPasswordPage from './pages/AuthPages/RestPasswordPage';
 import useUserStore from './store/UserStore';
 import Loader from './tools/Loader';
+import useDoctorStore from './store/DoctorStore';
 const ProtectedUserRoute = ({ children }: { children: ReactNode }) => {
   const { isVerified, isCheckingVerify } = useUserStore();
   if (isCheckingVerify) {
@@ -61,12 +62,48 @@ const RedirectAuthenticatedUser = ({ children }: { children: ReactNode }) => {
   }
   return <>{children}</>;
 };
+const ProtectedDoctorRoute = ({ children }: { children: ReactNode }) => {
+  const { isDoctorVerified, isCheckingDoctorVerify } = useDoctorStore();
+  if (isCheckingDoctorVerify) {
+    return (
+      <Loader
+        content_loader_style='w-full h-[100vh] flex items-center justify-center'
+        firSpinnerSize='w-20 h-20'
+        secondSpinnerSize='w-14 h-14'
+      />
+    );
+  }
+  if (!isDoctorVerified) {
+    return <Navigate to="/login-admin-or-doctor" replace />;
+  }
+  return <>{children}</>;
+};
+const RedirectAuthenticatedDoctor = ({ children }: { children: ReactNode }) => {
+  const { isDoctorVerified, isCheckingDoctorVerify } = useDoctorStore();
+  if (isCheckingDoctorVerify) {
+    return (
+      <Loader
+        content_loader_style='w-full h-[100vh] flex items-center justify-center'
+        firSpinnerSize='w-20 h-20'
+        secondSpinnerSize='w-14 h-14'
+      />
+    );
+  }
+  if (isDoctorVerified) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+};
 function App() {
+  const { checkDoctorAuth, isCheckingDoctorVerify } = useDoctorStore();
+  useEffect(() => {
+    checkDoctorAuth();
+  }, [checkDoctorAuth]);
   const { checkAuth, isCheckingVerify } = useUserStore();
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-  if (isCheckingVerify) {
+  if (isCheckingVerify || isCheckingDoctorVerify) {
     return (
       <Loader
         content_loader_style='w-full h-[100vh] flex items-center justify-center'
@@ -115,14 +152,26 @@ function App() {
         <Route path='/forget-password' element={
           <ForgetPassword />
         } />
-        <Route path='/login-admin-or-doctor' element={<LoginDoctorOrAdminPage />} />
+        <Route path='/login-admin-or-doctor' element={
+          <RedirectAuthenticatedDoctor>
+            <LoginDoctorOrAdminPage />
+          </RedirectAuthenticatedDoctor>
+        } />
         <Route path='/reset-password/:code' element={<RestPasswordPage />} />
-        <Route path='/dashboard-doctor' element={
-          <DashboardLayout typeHeader='doctor' links={doctorLinks} />
-        }>
-          <Route index element={<DashboardDoctorPage />} />
-          <Route path='/dashboard-doctor/appointments' element={<DoctorAppointmentsPage />} />
-          <Route path='/dashboard-doctor/profile' element={<ProfileDoctorPage />} />
+        <Route path='/dashboard-doctor' element={<DashboardLayout typeHeader='doctor' links={doctorLinks} />}>
+          <Route index element={
+            <ProtectedDoctorRoute>
+              <DashboardDoctorPage />
+            </ProtectedDoctorRoute>} />
+          <Route path='/dashboard-doctor/appointments' element={
+            <ProtectedDoctorRoute>
+              <DoctorAppointmentsPage />
+            </ProtectedDoctorRoute>
+          } />
+          <Route path='/dashboard-doctor/profile' element={
+            <ProtectedDoctorRoute>
+              <ProfileDoctorPage /></ProtectedDoctorRoute>
+          } />
         </Route>
         <Route path='/dashboard-admin' element={
           <DashboardLayout typeHeader='admin' links={adminLinks} />
@@ -133,7 +182,6 @@ function App() {
           <Route path='/dashboard-admin/doctors-list' element={<DoctorsListPage />} />
           <Route path='/dashboard-admin/profile' element={<AdminProfilePage />} />
         </Route>
-
         <Route path="*" element={<Page404 />} />
       </Routes>
       <Toaster />

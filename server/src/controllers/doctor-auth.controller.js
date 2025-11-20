@@ -103,10 +103,8 @@ export const loginDoctor = async (request, response) => {
             success: true,
             message: 'You logged in successfully!!',
             doctor: {
-                id: doctor._id,
-                name: doctor.name,
-                email: doctor.email,
-                speciality: doctor.speciality
+                ...doctor._doc,
+                password: undefined
             }
         });
     } catch (error) {

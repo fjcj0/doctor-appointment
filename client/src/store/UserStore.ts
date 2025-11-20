@@ -274,7 +274,7 @@ const useUserStore = create<UserStoreProps>((set, get) => ({
     checkCode: async (code: string) => {
         set({ isLoading: true });
         try {
-            const response = await axios.post(`${baseUrl}/api/user-auth/get-code-reset-password`, {
+            await axios.post(`${baseUrl}/api/user-auth/get-code-reset-password`, {
                 code
             });
         } catch (error) {
