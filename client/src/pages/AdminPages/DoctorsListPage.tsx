@@ -1,26 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Card from "../../components/ui/Card";
-import { doctors } from "../../constants/data";
 import LoaderDashboard from "../../tools/LoaderDashboard";
+import useScreenStore from "../../store/ScreenStore";
 const DoctorsListPage = () => {
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const { getDoctorsScreen, doctorsScreen } = useScreenStore();
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredDoctors, setFilteredDoctors] = useState(doctors);
-    const onChangeCheck = async () => {
-
-    }
-    useEffect(() => {
-        const filtered = doctors.filter(doctor =>
-            doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            doctor.specail.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredDoctors = useMemo(() => {
+        if (!searchTerm.trim()) {
+            return doctorsScreen;
+        }
+        const lowercasedSearch = searchTerm.toLowerCase();
+        return doctorsScreen.filter(doctor =>
+            doctor.name?.toLowerCase().includes(lowercasedSearch) ||
+            doctor.speciality?.toLowerCase().includes(lowercasedSearch)
         );
-        setFilteredDoctors(filtered);
-    }, [searchTerm]);
+    }, [doctorsScreen, searchTerm]);
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 3000);
-        return () => clearTimeout(timer);
+        const GetDoctors = async () => {
+            try {
+                setIsLoading(true);
+                await getDoctorsScreen();
+            } catch (error: unknown) {
+                console.log(error instanceof Error ? error.message : error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        GetDoctors();
     }, []);
     if (isLoading) {
         return <LoaderDashboard />;
@@ -42,20 +49,24 @@ const DoctorsListPage = () => {
             <div className='grid grid-cols-1 lg:grid-cols-4 gap-3'>
                 {filteredDoctors.map((doctor, index) => (
                     <Card
-                        key={index}
+                        key={doctor._id || index}
+                        id={doctor._id}
                         name={doctor.name}
-                        image={doctor.image}
-                        available={doctor.available}
-                        specail={doctor.specail}
+                        profilePicture={doctor.profilePicture}
+                        available={doctor?.available}
+                        specialtiy={doctor.speciality}
                         index={index}
                         isCheckAble={true}
-                        onChnageCheck={onChangeCheck}
+                        isForAdmin={true}
                     />
                 ))}
             </div>
             {filteredDoctors.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
-                    No doctors found matching your search.
+                    {doctorsScreen.length === 0
+                        ? "No doctors available."
+                        : "No doctors found matching your search."
+                    }
                 </div>
             )}
         </div>

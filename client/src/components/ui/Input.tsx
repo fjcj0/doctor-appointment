@@ -4,12 +4,14 @@ const Input = ({
     placeholder,
     onChange,
     value,
-    type
+    type,
+    isDisabled = false
 }: {
     placeholder: string,
     onChange: (value: any) => void,
     value: any,
-    type: string
+    type: string,
+    isDisabled?: boolean
 }) => {
     const [isFocused, setIsFocused] = useState(false);
     return (
@@ -20,6 +22,7 @@ const Input = ({
                 onChange={onChange}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
+                disabled={isDisabled}
                 className="w-full px-4 pt-5 pb-2 font-nunito text-sm text-black focus:text-blue-2 rounded-lg border-[0.5px] border-gray-400 focus:border-blue-2 focus:outline-none transition-all duration-200 peer"
             />
             <label

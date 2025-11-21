@@ -26,17 +26,20 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
         }
     },
     getAdminAppointments: async () => {
+        set({ isLoading: true });
         try {
             const response = await axios.get(`${baseUrl}/admin-appointment`);
             set({ adminAppointments: response.data.allAppointments });
         } catch (error) {
             console.log(error instanceof Error ? error.message : error);
+        } finally {
+            set({ isLoading: false });
         }
     },
     getAdminAppointmentsLimited: async () => {
         try {
             const response = await axios.get(`${baseUrl}/admin-latest-appointment`);
-            set({ adminAppointments: response.data.appointmentsLimited });
+            set({ adminAppointmentsLimited: response.data.appointmentsLimited });
         } catch (error) {
             console.log(error instanceof Error ? error.message : error);
         }

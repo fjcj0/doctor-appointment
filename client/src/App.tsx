@@ -30,6 +30,7 @@ import RestPasswordPage from './pages/AuthPages/RestPasswordPage';
 import useUserStore from './store/UserStore';
 import Loader from './tools/Loader';
 import useDoctorStore from './store/DoctorStore';
+import useAdminStore from './store/AdminStore';
 const ProtectedUserRoute = ({ children }: { children: ReactNode }) => {
   const { isVerified, isCheckingVerify } = useUserStore();
   if (isCheckingVerify) {
@@ -78,9 +79,9 @@ const ProtectedDoctorRoute = ({ children }: { children: ReactNode }) => {
   }
   return <>{children}</>;
 };
-const RedirectAuthenticatedDoctor = ({ children }: { children: ReactNode }) => {
-  const { isDoctorVerified, isCheckingDoctorVerify } = useDoctorStore();
-  if (isCheckingDoctorVerify) {
+const ProtectedAdminRoute = ({ children }: { children: ReactNode }) => {
+  const { isAdminVerified, isCheckingAdminVerify } = useAdminStore();
+  if (isCheckingAdminVerify) {
     return (
       <Loader
         content_loader_style='w-full h-[100vh] flex items-center justify-center'
@@ -89,12 +90,36 @@ const RedirectAuthenticatedDoctor = ({ children }: { children: ReactNode }) => {
       />
     );
   }
+  if (!isAdminVerified) {
+    return <Navigate to="/login-admin-or-doctor" replace />;
+  }
+  return <>{children}</>;
+};
+const RedirectAuthenticatedAdminOrAuthnticatedDoctor = ({ children }: { children: ReactNode }) => {
+  const { isAdminVerified, isCheckingAdminVerify } = useAdminStore();
+  const { isDoctorVerified, isCheckingDoctorVerify } = useDoctorStore();
+  if (isCheckingAdminVerify || isCheckingDoctorVerify) {
+    return (
+      <Loader
+        content_loader_style='w-full h-[100vh] flex items-center justify-center'
+        firSpinnerSize='w-20 h-20'
+        secondSpinnerSize='w-14 h-14'
+      />
+    );
+  }
+  if (isAdminVerified) {
+    return <Navigate to="/dashboard-admin" replace />;
+  }
   if (isDoctorVerified) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard-doctor" replace />;
   }
   return <>{children}</>;
 };
 function App() {
+  const { checkAdminAuth, isCheckingAdminVerify } = useAdminStore();
+  useEffect(() => {
+    checkAdminAuth();
+  }, [checkAdminAuth]);
   const { checkDoctorAuth, isCheckingDoctorVerify } = useDoctorStore();
   useEffect(() => {
     checkDoctorAuth();
@@ -103,7 +128,7 @@ function App() {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-  if (isCheckingVerify || isCheckingDoctorVerify) {
+  if (isCheckingVerify || isCheckingDoctorVerify || isCheckingAdminVerify) {
     return (
       <Loader
         content_loader_style='w-full h-[100vh] flex items-center justify-center'
@@ -153,9 +178,9 @@ function App() {
           <ForgetPassword />
         } />
         <Route path='/login-admin-or-doctor' element={
-          <RedirectAuthenticatedDoctor>
+          <RedirectAuthenticatedAdminOrAuthnticatedDoctor>
             <LoginDoctorOrAdminPage />
-          </RedirectAuthenticatedDoctor>
+          </RedirectAuthenticatedAdminOrAuthnticatedDoctor>
         } />
         <Route path='/reset-password/:code' element={<RestPasswordPage />} />
         <Route path='/dashboard-doctor' element={<DashboardLayout typeHeader='doctor' links={doctorLinks} />}>
@@ -176,11 +201,21 @@ function App() {
         <Route path='/dashboard-admin' element={
           <DashboardLayout typeHeader='admin' links={adminLinks} />
         }>
-          <Route index element={<DashboardAdminPage />} />
-          <Route path='/dashboard-admin/appointments' element={<AdminAppointmentsPage />} />
-          <Route path='/dashboard-admin/add-doctor' element={<AddDoctorPage />} />
-          <Route path='/dashboard-admin/doctors-list' element={<DoctorsListPage />} />
-          <Route path='/dashboard-admin/profile' element={<AdminProfilePage />} />
+          <Route index element={<ProtectedAdminRoute>
+            <DashboardAdminPage />
+          </ProtectedAdminRoute>} />
+          <Route path='/dashboard-admin/appointments' element={<ProtectedAdminRoute>
+            <AdminAppointmentsPage />
+          </ProtectedAdminRoute>} />
+          <Route path='/dashboard-admin/add-doctor' element={<ProtectedAdminRoute>
+            <AddDoctorPage />
+          </ProtectedAdminRoute>} />
+          <Route path='/dashboard-admin/doctors-list' element={<ProtectedAdminRoute>
+            <DoctorsListPage />
+          </ProtectedAdminRoute>} />
+          <Route path='/dashboard-admin/profile' element={<ProtectedAdminRoute>
+            <AdminProfilePage />
+          </ProtectedAdminRoute>} />
         </Route>
         <Route path="*" element={<Page404 />} />
       </Routes>

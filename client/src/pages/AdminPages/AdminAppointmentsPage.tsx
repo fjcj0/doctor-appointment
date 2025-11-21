@@ -1,20 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import LoaderDashboard from "../../tools/LoaderDashboard";
-import { adminAppointments } from "../../constants/data";
 import AppointmentTable from "../../components/ui/AppointmentTable";
+import useAdminStore from "../../store/AdminStore";
+import { calculateAge } from "../../utils/calculateAge";
 const AdminAppointmentsPage = () => {
-    const [isLoading, setIsLoading] = useState(true);
+    const { isLoading, adminAppointments, getAdminAppointments } = useAdminStore();
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 3000);
-        return () => clearTimeout(timer);
+        getAdminAppointments();
     }, []);
     if (isLoading) {
         return <LoaderDashboard />;
-    }
-    const onCancel = async () => {
-        console.log('Cancelled');
     }
     return (
         <div className="p-6 font-nunito">
@@ -35,16 +30,17 @@ const AdminAppointmentsPage = () => {
                         {adminAppointments.map((appointment, index) => (
                             <AppointmentTable
                                 key={index}
-                                patient={appointment.pateint}
-                                image={appointment.image}
+                                appointmentId={appointment._id}
+                                patient={appointment.userId.name}
+                                image={appointment.userId.profilePicture}
                                 payment={appointment.payment}
-                                age={appointment.age}
-                                fee={appointment.Fee}
+                                age={calculateAge(appointment.userId.birthday)}
+                                fee={appointment.fees}
                                 status={appointment.status}
-                                date={appointment.Date}
-                                doctor={appointment.doctor}
-                                doctorImage={appointment.doctorImage}
-                                onCancel={onCancel}
+                                date={appointment.date}
+                                doctor={appointment.doctorId.name}
+                                doctorImage={appointment.doctorId.profilePicture}
+                                isAdmin={true}
                             />
                         ))}
                     </div>

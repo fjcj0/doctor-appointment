@@ -7,7 +7,6 @@ const Card = ({
     specialtiy,
     index,
     isCheckAble,
-    onChnageCheck,
     isForAdmin
 }: {
     profilePicture: string,
@@ -17,11 +16,11 @@ const Card = ({
     id: string,
     index: number,
     isCheckAble?: boolean,
-    onChnageCheck?: () => Promise<void>;
     isForAdmin: boolean
 }) => {
     function goToItem() {
-        window.location.href = `/appointment/${id}`;
+        if (!isForAdmin)
+            window.location.href = `/appointment/${id}`;
     }
     return (
         <motion.div
@@ -57,9 +56,12 @@ const Card = ({
                     {specialtiy}
                 </p>
                 {
-                    isCheckAble !== undefined &&
+                    isCheckAble !== undefined && typeof available === 'boolean' &&
                     <label htmlFor="" className='flex items-center justify-start gap-2'>
-                        <input type='checkbox' onChange={onChnageCheck} />
+                        <input
+                            type='checkbox'
+                            checked={available}
+                        />
                         Available
                     </label>
                 }

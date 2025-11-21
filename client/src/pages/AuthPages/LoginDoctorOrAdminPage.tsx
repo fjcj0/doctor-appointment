@@ -9,9 +9,12 @@ import { circleIcon } from "../../constants/data";
 import type { LoginStatusProp } from "../../global";
 import useDoctorStore from "../../store/DoctorStore";
 import { useNavigate } from "react-router";
+import useAdminStore from "../../store/AdminStore";
 const LoginDoctorOrAdminPage = () => {
     const navigate = useNavigate();
     const { loginDoctor, isLoading } = useDoctorStore();
+    const { loginAdmin } = useAdminStore();
+    const [isLoadingAdmin, setIsLoadingAdmin] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
@@ -61,10 +64,22 @@ const LoginDoctorOrAdminPage = () => {
         }
         if (!hasError) {
             if (loginStatus === 'doctor') {
-                await loginDoctor(email, password);
-                navigate('/dashboard-doctor');
+                try {
+                    await loginDoctor(email, password);
+                    navigate('/dashboard-doctor');
+                } catch (error) {
+                    console.log(error instanceof Error ? error.message : error);
+                }
             } else if (loginStatus === 'admin') {
-
+                setIsLoadingAdmin(true);
+                try {
+                    await loginAdmin(email, password);
+                    navigate('/dashboard-admin');
+                } catch (error) {
+                    console.log(error instanceof Error ? error.message : error);
+                } finally {
+                    setIsLoadingAdmin(false);
+                }
             }
         }
     };
@@ -113,7 +128,7 @@ const LoginDoctorOrAdminPage = () => {
                         />
                     </div>
                     <div className="w-full flex items-center justify-between">
-                        <ButtonAuth text="Sign In" onPress={handleClick} isLoading={isLoading} />
+                        <ButtonAuth text="Sign In" onPress={handleClick} isLoading={isLoading || isLoadingAdmin} />
                         <button
                             type="button"
                             className="font-poppins text-xs hover:underline duration-300 transition-all flex items-center justify-center gap-1"

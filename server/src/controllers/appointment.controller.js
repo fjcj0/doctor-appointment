@@ -601,7 +601,7 @@ export const appointments = async (request, response) => {
             allAppointments = await Appointment.find({})
                 .populate([{
                     path: 'userId',
-                    select: 'name profilePicture'
+                    select: 'name profilePicture birthday'
                 }, {
                     path: 'doctorId',
                     select: 'name profilePicture speciality'

@@ -182,7 +182,8 @@ export type adminAppointmentType = {
     userId: {
         _id: string,
         name: string,
-        profilePicture: string
+        profilePicture: string,
+        birthday: string,
     },
     doctorId: {
         _id: string,
