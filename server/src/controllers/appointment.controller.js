@@ -502,6 +502,9 @@ export const doctorChangeAvailable = async (request, response) => {
             });
         }
         doctor.available = !doctor.available;
+        await removeCache('doctors_limiting');
+        await removeCache('doctors');
+        await removeCache(`related_doctors_${doctor.speciality}`);
         doctor.save();
         return response.status(200).json({
             success: false,
@@ -728,6 +731,7 @@ export const changeAvailable = async (request, response) => {
         doctor.save();
         await removeCache('doctors');
         await removeCache(`related_doctors_${doctor.speciality}`);
+        await removeCache('doctors_limiting');
         return response.status(200).json({
             success: false,
             message: `Doctor status changed to ${doctor.available}`
