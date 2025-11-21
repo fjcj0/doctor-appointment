@@ -38,6 +38,9 @@ app.use(helmet({
 app.use(morgan('dev'));
 app.use(async (req, res, next) => {
     try {
+        if (process.env.NODE_ENV === 'development' && !process.env.ARCJET_KEY) {
+            return next();
+        }
         const decision = await aj.protect(req, { requested: 1 });
         if (decision.isDenied()) {
             if (decision.reason.isRateLimit()) {
@@ -53,8 +56,8 @@ app.use(async (req, res, next) => {
         }
         next();
     } catch (error) {
-        console.error(error.message);
-        next(error);
+        console.log('Arcjet protection error:', error.message);
+        next();
     }
 });
 app.get('/cron', (request, response) => {
