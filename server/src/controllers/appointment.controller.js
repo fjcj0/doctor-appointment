@@ -572,7 +572,7 @@ export const latestAppointmentsForDoctors = async (request, response) => {
                 })
                 .select(['_id', 'doctorId', 'userId', 'payment', 'date', 'fees', 'status', 'createdAt'])
                 .sort({ createdAt: -1 })
-                .limit(10).lean();
+                .limit(5).lean();
             cache.set(cacheKey, appointmentsLimited, 300);
         }
         return response.status(200).json({

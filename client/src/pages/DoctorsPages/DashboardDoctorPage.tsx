@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import CardDashboard from "../../components/ui/CardDashboard";
 import Table from "../../components/ui/Table";
-import { DollarSign, ListIcon } from "lucide-react";
+import { Book, DollarSign, ListIcon, User } from "lucide-react";
 import LoaderDashboard from "../../tools/LoaderDashboard";
 import useDoctorStore from "../../store/DoctorStore";
 const DashboardDoctorPage = () => {
@@ -37,14 +37,14 @@ const DashboardDoctorPage = () => {
                     value={doctor?.earning || 0} />
                 <CardDashboard
                     title={'Appointments'}
-                    color={'yellow'}
-                    icon={DollarSign}
+                    color={'blue'}
+                    icon={Book}
                     isMoney={false}
                     value={appointments || 0} />
                 <CardDashboard
                     title={'Patients'}
                     color={'red'}
-                    icon={DollarSign}
+                    icon={User}
                     isMoney={false}
                     value={patients || 0} />
             </div>

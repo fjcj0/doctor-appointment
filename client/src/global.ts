@@ -177,3 +177,69 @@ export interface DoctorStoreProps {
     getNumberOfPatients: () => Promise<void>,
     updateAppointmentStatus: (appointmentId: string, newStatus: string) => void,
 }
+export type adminAppointmentType = {
+    _id: string,
+    userId: {
+        _id: string,
+        name: string,
+        profilePicture: string
+    },
+    doctorId: {
+        _id: string,
+        name: string,
+        speciality: string,
+        profilePicture: string
+    },
+    status: string,
+    date: string,
+    fees: number,
+    payment: string,
+    created_at: string
+}
+export type adminAppointmentLimitedType = {
+    _id: string,
+    userId: {
+        _id: string,
+        name: string,
+        profilePicture: string
+    },
+    doctorId: {
+        _id: string,
+        name: string,
+        speciality: string,
+        profilePicture: string
+    },
+    status: string,
+    date: string,
+    fees: number,
+    payment: string,
+    created_at: string
+}
+export interface AdminStoreProps {
+    isAdminVerified: boolean,
+    isCheckingAdminVerify: boolean,
+    isLoading: boolean,
+    admin: {
+        _id: string,
+        name: string,
+        email: string,
+        profilePicture: string,
+    } | null,
+    patients: number,
+    doctors: number,
+    appointments: number,
+    adminAppointments: adminAppointmentType[],
+    adminAppointmentsLimited: adminAppointmentLimitedType[],
+    checkAdminAuth: () => Promise<void>,
+    getAdminAppointments: () => Promise<void>,
+    getAdminAppointmentsLimited: () => Promise<void>,
+    loginAdmin: (email: string, password: string) => Promise<void>,
+    updateAdmin: (name: string, profilePicture: string) => Promise<void>,
+    logoutAdmin: () => Promise<void>,
+    adminCancelAppointment: (appointmendId: string) => Promise<void>,
+    changeAvailable: (doctorId: string) => Promise<void>,
+    getTotalAppointments: () => Promise<void>,
+    getTotalDoctors: () => Promise<void>,
+    getTotalPatients: () => Promise<void>,
+    createDoctor: (name: string, email: string, password: string, speciality: string, degree: string, address: string, profilePicture: string, experience: string, fees: number, about: string) => Promise<void>,
+}
