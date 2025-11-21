@@ -17,7 +17,8 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
     checkAdminAuth: async () => {
         set({ isCheckingAdminVerify: true });
         try {
-
+            const response = await axios.get(`${baseUrl}/api/admin-auth/check-admin-auth`);
+            set({ isAdminVerified: true, admin: response.data.admin });
         } catch (error) {
             console.log(error instanceof Error ? error.message : error);
         } finally {
@@ -26,14 +27,16 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
     },
     getAdminAppointments: async () => {
         try {
-
+            const response = await axios.get(`${baseUrl}/admin-appointment`);
+            set({ adminAppointments: response.data.allAppointments });
         } catch (error) {
             console.log(error instanceof Error ? error.message : error);
         }
     },
     getAdminAppointmentsLimited: async () => {
         try {
-
+            const response = await axios.get(`${baseUrl}/admin-latest-appointment`);
+            set({ adminAppointments: response.data.appointmentsLimited });
         } catch (error) {
             console.log(error instanceof Error ? error.message : error);
         }
@@ -41,7 +44,12 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
     loginAdmin: async (email: string, password: string) => {
         set({ isLoading: true });
         try {
-
+            const response = await axios.post(`${baseUrl}/api/admin-auth/login-admin`, {
+                email,
+                password
+            });
+            set({ isAdminVerified: true, admin: response.data.admin });
+            toast.success(`Welcome ${response.data.admin.name}`);
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
                 toast.error(error.response.data.error);
@@ -58,10 +66,17 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
             set({ isLoading: false });
         }
     },
-    updateAdmin: async (name: string, profilePicture: string) => {
+    updateAdmin: async (name: string, image: string) => {
         set({ isLoading: true });
         try {
-
+            const response = await axios.put(`${baseUrl}/api/admin-auth/update-admin`, {
+                name,
+                image
+            });
+            if (response.status === 200) {
+                toast.success(`Admin updated sucessfully`);
+                set({ admin: response.data.admin });
+            }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
                 toast.error(error.response.data.error);
@@ -80,7 +95,9 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
     },
     logoutAdmin: async () => {
         try {
-
+            await axios.post(`${baseUrl}/api/admin-auth/logout-admin`);
+            set({ isAdminVerified: false, admin: null });
+            toast.success(`You logged out successfully`);
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
                 toast.error(error.response.data.error);
@@ -97,7 +114,12 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
     },
     adminCancelAppointment: async (appointmentId: string) => {
         try {
-
+            const response = await axios.post(`${baseUrl}/admin-cancel-appointment`, {
+                appointmentId
+            });
+            if (response.status === 200) {
+                toast.success(`Appointment Cancelled Sucessfully`);
+            }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
                 toast.error(error.response.data.error);
@@ -114,7 +136,12 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
     },
     changeAvailable: async (doctorId: string) => {
         try {
-
+            const response = await axios.put(`${baseUrl}/admin-change-doctor-available`, {
+                doctorId
+            });
+            if (response.status === 200) {
+                toast.success(`Doctor available changed sucessfully`);
+            }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
                 toast.error(error.response.data.error);
@@ -131,21 +158,24 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
     },
     getTotalAppointments: async () => {
         try {
-
+            const response = await axios.get(`${baseUrl}/admin-total-appointment`);
+            set({ appointments: response.data.totalAllAppointments });
         } catch (error) {
             console.log(error instanceof Error ? error.message : error);
         }
     },
     getTotalDoctors: async () => {
         try {
-
+            const response = await axios.get(`${baseUrl}/admin-total-doctor`);
+            set({ doctors: response.data.totalDoctors });
         } catch (error) {
             console.log(error instanceof Error ? error.message : error);
         }
     },
     getTotalPatients: async () => {
         try {
-
+            const response = await axios.get(`${baseUrl}/admin-total-patient`);
+            set({ patients: response.data.totalAllPatients });
         } catch (error) {
             console.log(error instanceof Error ? error.message : error);
         }
@@ -153,7 +183,22 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
     createDoctor: async (name: string, email: string, password: string, speciality: string, degree: string, address: string, profilePicture: string, experience: string, fees: number, about: string) => {
         set({ isLoading: true });
         try {
-
+            const response = await axios.post(`${baseUrl}/api/doctor-auth/create-doctor-account`, {
+                name,
+                email,
+                password,
+                speciality,
+                degree,
+                address,
+                profilePicture,
+                experience,
+                fees,
+                about
+            });
+            if (response.status === 201) {
+                toast.success(`Doctor created successfully`);
+                set({ doctors: (get().doctors || 0) + 1 });
+            }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data?.error) {
                 toast.error(error.response.data.error);

@@ -9,7 +9,12 @@ export const checkAdminAuth = async (request, response) => {
         if (!admin) {
             return response.status(404).json({ success: false, message: 'error no admin is authenticated!!' });
         }
-        return response.status(200).json({ success: true, admin });
+        return response.status(200).json({
+            success: true, admin: {
+                ...admin._doc,
+                password: undefined
+            }
+        });
     } catch (error) {
         console.log("Internal Server Error: ", error instanceof Error ? error.message : error);
         return response.status(500).json({
