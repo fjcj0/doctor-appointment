@@ -1,27 +1,21 @@
 import arcjet, { tokenBucket, shield, detectBot } from "@arcjet/node";
 import 'dotenv/config';
 const isProduction = process.env.NODE_ENV === 'production';
-const getCharacteristics = () => {
-    return ["userAgent", "requestPath", "method"];
-};
-const getMode = () => {
-    return isProduction ? "LIVE" : "DRY_RUN";
-};
 export const aj = arcjet({
     key: process.env.ARCJET_KEY,
-    characteristics: getCharacteristics(),
+    characteristics: ["requestPath", "method"],
     rules: [
         shield({
-            mode: getMode()
+            mode: isProduction ? "LIVE" : "DRY_RUN"
         }),
         detectBot({
-            mode: getMode(),
+            mode: isProduction ? "LIVE" : "DRY_RUN",
             allow: [
                 "CATEGORY:SEARCH_ENGINE",
             ]
         }),
         tokenBucket({
-            mode: getMode(),
+            mode: isProduction ? "LIVE" : "DRY_RUN",
             refillRate: isProduction ? 30 : 100,
             interval: 5,
             capacity: isProduction ? 20 : 100
