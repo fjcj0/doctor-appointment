@@ -18,8 +18,6 @@ import { uploadImage } from "./lib/uploadImage.js";
 import upload from "./config/multer.js";
 import mainRoute from './routes/main.route.js';
 import { botDetection } from "./utils/botDetection.js";
-import { logSlowDownIP, speedLimiter } from "./utils/slowDownLimiter.js";
-import { apiProtection } from "./utils/apiProtect.js";
 import { limiter } from "./utils/rateLimit.js";
 import path from 'path';
 const __dirname = path.resolve();
@@ -79,28 +77,7 @@ app.use((req, res, next) => {
 });
 app.use((req, res, next) => {
     if (needsProtection(req)) {
-        speedLimiter(req, res, next);
-    } else {
-        next();
-    }
-});
-app.use((req, res, next) => {
-    if (needsProtection(req)) {
-        logSlowDownIP(req, res, next);
-    } else {
-        next();
-    }
-});
-app.use((req, res, next) => {
-    if (needsProtection(req)) {
         limiter(req, res, next);
-    } else {
-        next();
-    }
-});
-app.use((req, res, next) => {
-    if (needsProtection(req)) {
-        apiProtection(req, res, next);
     } else {
         next();
     }
