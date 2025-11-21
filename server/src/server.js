@@ -18,6 +18,8 @@ import cookieParser from 'cookie-parser';
 import { uploadImage } from "./lib/uploadImage.js";
 import upload from "./config/multer.js";
 import mainRoute from './routes/main.route.js';
+import path from 'path';
+const __dirname = path.resolve();
 const app = express();
 app.use(cookieParser());
 if (process.env.NODE_ENV !== 'development') job.start();
@@ -68,6 +70,12 @@ app.use(userAppointmentRoute);
 app.use(doctorAppointmentRoute);
 app.use(adminAppointmentRoute);
 const server = createServer(app);
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../client/dist")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+    });
+}
 connectDB().then(() => {
     server.listen(process.env.PORT, () => {
         console.log(chalk.green('✓'), chalk.blueBright.bold(`Server running at: http://localhost:${process.env.PORT}`));
