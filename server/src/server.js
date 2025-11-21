@@ -28,11 +28,6 @@ app.set('trust proxy', 1);
 app.use(cookieParser());
 if (process.env.NODE_ENV !== 'development') job.start();
 app.use(express.json());
-app.use(botDetection);
-app.use(speedLimiter);
-app.use(logSlowDownIP);
-app.use(limiter);
-app.use(apiProtection);
 app.use(cors({
     origin: process.env.NODE_ENV === 'development'
         ? 'http://localhost:5173'
@@ -44,10 +39,70 @@ app.use(helmet({
     contentSecurityPolicy: false,
 }));
 app.use(morgan('dev'));
-app.use(async (error, request, response, next) => {
-    response.status(500).json({
-        error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
-    });
+const needsProtection = (req) => {
+    const protectedPaths = [
+        '/api/',
+        '/admin-total-doctor',
+        '/admin-total-appointment',
+        '/admin-total-patient',
+        '/admin-latest-appointment',
+        '/admin-appointment',
+        '/admin-cancel-appointment',
+        '/admin-change-doctor-available',
+        '/total-appointment-doctor',
+        '/total-patient-doctor',
+        '/latest-doctor-appointment',
+        '/doctor-appointment',
+        '/doctor-accept-appointment',
+        '/doctor-cancel-appointment',
+        '/doctor-change-available',
+        '/doctors-limiting',
+        '/doctors',
+        '/doctor/',
+        '/related-doctor/',
+        '/user-create-appointment',
+        '/user-cancel-appointment',
+        '/user-pay-online',
+        '/user-appointments',
+        '/create-checkout-session',
+        '/change-status-complete',
+    ];
+    return protectedPaths.some(path => req.path.startsWith(path));
+};
+app.use((req, res, next) => {
+    if (needsProtection(req)) {
+        botDetection(req, res, next);
+    } else {
+        next();
+    }
+});
+app.use((req, res, next) => {
+    if (needsProtection(req)) {
+        speedLimiter(req, res, next);
+    } else {
+        next();
+    }
+});
+app.use((req, res, next) => {
+    if (needsProtection(req)) {
+        logSlowDownIP(req, res, next);
+    } else {
+        next();
+    }
+});
+app.use((req, res, next) => {
+    if (needsProtection(req)) {
+        limiter(req, res, next);
+    } else {
+        next();
+    }
+});
+app.use((req, res, next) => {
+    if (needsProtection(req)) {
+        apiProtection(req, res, next);
+    } else {
+        next();
+    }
 });
 app.get('/cron', (request, response) => {
     return response.status(200).json({
@@ -68,12 +123,17 @@ if (process.env.NODE_ENV === "production") {
         res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
     });
 }
+app.use(async (error, request, response, next) => {
+    response.status(500).json({
+        error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+    });
+});
 const server = createServer(app);
 connectDB().then(() => {
     server.listen(process.env.PORT, () => {
         console.log(chalk.green('✓'), chalk.blueBright.bold(`Server running at: http://localhost:${process.env.PORT}`));
         console.log(chalk.yellow('★'), chalk.cyan(process.env.NODE_ENV == 'development' ? 'Ready for development' : 'Ready for using'));
-        console.log(chalk.red('🛡️'), chalk.yellow('Universal DDoS protection activated for ALL routes'));
+        console.log(chalk.red('🛡️'), chalk.yellow('DDoS protection activated for protected routes only'));
     });
 }).catch((error) => {
     console.log(error instanceof Error ? error.message : error);
