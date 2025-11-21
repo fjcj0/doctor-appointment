@@ -28,7 +28,7 @@ app.use(express.json());
 app.use(cors({
     origin: process.env.NODE_ENV === 'development'
         ? 'http://localhost:5173'
-        : 'https://doctor-appointment-s43v.onrender.com',
+        : 'https://doctor-appointment-fbh5.onrender.com',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));
