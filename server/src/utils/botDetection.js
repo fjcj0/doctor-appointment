@@ -2,6 +2,9 @@ import * as UAParser from 'ua-parser-js';
 const allowedBrowsers = [
     'Chrome', 'Firefox', 'Opera', 'Safari', 'Edge', 'Tor Browser'
 ];
+const allowedMobileBrowsers = [
+    'Mobile Chrome', 'Mobile Firefox', 'Mobile Safari', 'Mobile Edge'
+];
 const suspiciousKeywords = [
     'bot', 'crawler', 'spider', 'scraper', 'monitor', 'checker'
 ];
@@ -12,7 +15,9 @@ export const botDetection = async (request, response, next) => {
         const ua = parser.getResult();
         const browser = ua.browser.name || "Unknown";
         const engine = ua.engine.name || "";
-        if (!allowedBrowsers.includes(browser)) {
+        const isAllowedBrowser = allowedBrowsers.includes(browser) ||
+            allowedMobileBrowsers.includes(browser);
+        if (!isAllowedBrowser) {
             return response.status(403).json({
                 error: `Access denied: Unsupported browser - ${browser}`
             });
