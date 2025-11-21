@@ -48,7 +48,8 @@ const UserProfilePage = () => {
         setUploadError('');
         try {
             const imageUrl = await uploadImage(file);
-            setProfilePicture(imageUrl);
+            if (imageUrl)
+                setProfilePicture(imageUrl);
         } catch (error: unknown) {
             setUploadError('Failed to upload image. Please try again.');
             console.error('Image upload error:', error);
