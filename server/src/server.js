@@ -1,5 +1,5 @@
 import "dotenv/config";
-import express, { request, response } from 'express';
+import express from 'express';
 import { createServer } from "http";
 import chalk from 'chalk';
 import { connectDB } from "./lib/db.js";
@@ -19,7 +19,9 @@ import { uploadImage } from "./lib/uploadImage.js";
 import upload from "./config/multer.js";
 import mainRoute from './routes/main.route.js';
 import path from 'path';
-const __dirname = path.resolve();
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cookieParser());
 if (process.env.NODE_ENV !== 'development') job.start();
@@ -27,7 +29,7 @@ app.use(express.json());
 app.use(cors({
     origin: process.env.NODE_ENV === 'development'
         ? 'http://localhost:5173'
-        : '',
+        : 'https://doctor-appointment-s43v.onrender.com',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));
@@ -69,13 +71,13 @@ app.use(mainRoute);
 app.use(userAppointmentRoute);
 app.use(doctorAppointmentRoute);
 app.use(adminAppointmentRoute);
-const server = createServer(app);
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../client/dist")));
     app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+        res.sendFile(path.join(__dirname, "../client/dist/index.html"));
     });
 }
+const server = createServer(app);
 connectDB().then(() => {
     server.listen(process.env.PORT, () => {
         console.log(chalk.green('✓'), chalk.blueBright.bold(`Server running at: http://localhost:${process.env.PORT}`));
