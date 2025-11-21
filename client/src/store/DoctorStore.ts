@@ -3,7 +3,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import type { DoctorStoreProps } from '../global';
 axios.defaults.withCredentials = true;
-const baseUrl = import.meta.env.NODE_ENV == 'production' ? '' : 'http://localhost:2340';
+const baseUrl = import.meta.env.NODE_ENV === 'production' ? 'development' : '';
 const useDoctorStore = create<DoctorStoreProps>((set, get) => ({
     isDoctorVerified: false,
     isCheckingDoctorVerify: true,
