@@ -28,10 +28,11 @@ if (process.env.NODE_ENV !== 'development') job.start();
 app.use(express.json());
 app.use(cors({
     origin: process.env.NODE_ENV === 'development'
-        ? 'http://localhost:5173'
-        : 'https://doctor-appointment-hsbv.onrender.com',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        ? ['http://localhost:5173']
+        : ['https://doctor-appointment-hsbv.onrender.com'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.use(helmet({
     contentSecurityPolicy: false,
