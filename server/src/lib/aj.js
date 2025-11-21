@@ -2,7 +2,7 @@ import arcjet, { tokenBucket, shield, detectBot } from "@arcjet/node";
 import 'dotenv/config';
 export const aj = arcjet({
     key: process.env.ARCJET_KEY,
-    characteristics: ["ip.src"],
+    characteristics: process.env.NODE_ENV === 'development' ? ["ip.src"] : [process.env.MISSING_IP_ADDRESS],
     rules: [
         shield({
             mode: "LIVE"
