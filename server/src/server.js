@@ -66,6 +66,7 @@ const needsProtection = (req) => {
         '/user-appointments',
         '/create-checkout-session',
         '/change-status-complete',
+        '/cron'
     ];
     return protectedPaths.some(path => req.path.startsWith(path));
 };
