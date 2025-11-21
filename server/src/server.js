@@ -36,7 +36,7 @@ app.use(apiProtection);
 app.use(cors({
     origin: process.env.NODE_ENV === 'development'
         ? 'http://localhost:5173'
-        : 'https://doctor-appointment-fbh5.onrender.com',
+        : 'https://doctor-appointment-hsbv.onrender.com',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));
