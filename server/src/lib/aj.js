@@ -11,12 +11,6 @@ export const aj = arcjet({
             mode: "LIVE",
             allow: [
                 "CATEGORY:SEARCH_ENGINE",
-                "CATEGORY:MONITOR",
-                "VERIFIED:YES",
-                "POSTMAN",
-                "INSOMNIA",
-                "HTTPIE",
-                "CURL"
             ]
         }),
         tokenBucket({

@@ -19,10 +19,9 @@ import { uploadImage } from "./lib/uploadImage.js";
 import upload from "./config/multer.js";
 import mainRoute from './routes/main.route.js';
 import path from 'path';
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.resolve();
 const app = express();
+app.set('trust proxy', true);
 app.use(cookieParser());
 if (process.env.NODE_ENV !== 'development') job.start();
 app.use(express.json());
@@ -74,7 +73,7 @@ app.use(adminAppointmentRoute);
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../client/dist")));
     app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+        res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
     });
 }
 const server = createServer(app);
