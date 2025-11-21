@@ -111,6 +111,8 @@ route.get('/change-status-complete', async (request, response) => {
         await removeCache(`appointments-user-${userId}`);
         await removeCache(`appointments-doctors-${doctorId}`);
         await removeCache(`latest-appointments-doctors-${doctorId}`);
+        await removeCache('latest-appointments-admin');
+        await removeCache('all-appointments-admin');
         return response.redirect(`${process.env.CLIENT_URL}/my-appointments`);
     } catch (error) {
         console.log('Error in change-status-complete:', error instanceof Error ? error.message : error);

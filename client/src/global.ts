@@ -243,4 +243,5 @@ export interface AdminStoreProps {
     getTotalDoctors: () => Promise<void>,
     getTotalPatients: () => Promise<void>,
     createDoctor: (name: string, email: string, password: string, speciality: string, degree: string, address: string, profilePicture: string, experience: string, fees: number, about: string) => Promise<void>,
+    updateAppointmentStatus: (appointmentId: string, newStatus: string) => void,
 }

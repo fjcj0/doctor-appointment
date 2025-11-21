@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import useAdminStore from '../../store/AdminStore';
+import { useState } from 'react';
 const Card = ({
     profilePicture,
     available,
@@ -22,6 +24,20 @@ const Card = ({
         if (!isForAdmin)
             window.location.href = `/appointment/${id}`;
     }
+    const { changeAvailable } = useAdminStore();
+    const [isLoading, setIsLoading] = useState(false);
+    const [localAvailable, setLocalAvailable] = useState(available);
+    const onChangleAvailable = async () => {
+        setIsLoading(true);
+        try {
+            await changeAvailable(id);
+            setLocalAvailable(!localAvailable);
+        } catch (error) {
+            console.log(error instanceof Error ? error.message : error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
     return (
         <motion.div
             initial={{ opacity: 0, x: 100 }}
@@ -44,9 +60,9 @@ const Card = ({
             </div>
             <div className="flex flex-col gap-3 p-3">
                 <div className="flex items-center justify-start gap-2">
-                    <span className={`w-3 h-3 rounded-full ${available ? 'bg-green-500' : 'bg-red-500'}`} />
-                    <p className={`${available ? 'text-green-500' : 'text-red-500'} text-sm font-medium`}>
-                        {available ? 'Available' : 'Not Available'}
+                    <span className={`w-3 h-3 rounded-full ${localAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <p className={`${localAvailable ? 'text-green-500' : 'text-red-500'} text-sm font-medium`}>
+                        {localAvailable ? 'Available' : 'Not Available'}
                     </p>
                 </div>
                 <h1 className="text-black font-bold text-xl">
@@ -59,8 +75,11 @@ const Card = ({
                     isCheckAble !== undefined && typeof available === 'boolean' &&
                     <label htmlFor="" className='flex items-center justify-start gap-2'>
                         <input
-                            type='checkbox'
-                            checked={available}
+                            type="checkbox"
+                            checked={localAvailable}
+                            onChange={onChangleAvailable}
+                            disabled={isLoading}
+                            className={`cursor-pointer ${isLoading ? 'opacity-50' : ''}`}
                         />
                         Available
                     </label>

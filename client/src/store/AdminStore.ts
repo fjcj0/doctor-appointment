@@ -14,6 +14,16 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
     appointments: 0,
     adminAppointments: [],
     adminAppointmentsLimited: [],
+    updateAppointmentStatus: (appointmentId: string, newStatus: string) => {
+        set((state) => ({
+            adminAppointments: state.adminAppointments.map(apt =>
+                apt._id === appointmentId ? { ...apt, status: newStatus } : apt
+            ),
+            adminAppointmentsLimited: state.adminAppointmentsLimited.map(apt =>
+                apt._id === appointmentId ? { ...apt, status: newStatus } : apt
+            )
+        }));
+    },
     checkAdminAuth: async () => {
         set({ isCheckingAdminVerify: true });
         try {
@@ -121,6 +131,8 @@ const useAdminStore = create<AdminStoreProps>((set, get) => ({
                 appointmentId
             });
             if (response.status === 200) {
+                set({ patients: (get().patients || 1) - 1 });
+                get().updateAppointmentStatus(appointmentId, 'cancelled');
                 toast.success(`Appointment Cancelled Sucessfully`);
             }
         } catch (error) {

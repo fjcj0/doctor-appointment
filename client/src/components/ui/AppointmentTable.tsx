@@ -2,6 +2,7 @@ import { CheckIcon, XIcon } from "lucide-react";
 import type { AppointmentTableProps } from "../../global";
 import { useState } from "react";
 import useDoctorStore from "../../store/DoctorStore";
+import useAdminStore from "../../store/AdminStore";
 const AppointmentTable = ({
     patient,
     image,
@@ -16,6 +17,7 @@ const AppointmentTable = ({
     appointmentId
 }: AppointmentTableProps & { isAdmin: boolean, appointmentId: string }) => {
     const { doctorCancelAppointment, doctorAcceptAppointment } = useDoctorStore();
+    const { adminCancelAppointment } = useAdminStore();
     const [isCancelling, setIsCancelling] = useState(false);
     const [isAccepting, setIsAccepting] = useState(false);
     const handleCancel = async () => {
@@ -29,7 +31,14 @@ const AppointmentTable = ({
                 setIsCancelling(false);
             }
         } else {
-
+            setIsCancelling(true);
+            try {
+                await adminCancelAppointment(appointmentId);
+            } catch (error) {
+                console.log(error instanceof Error ? error.message : error);
+            } finally {
+                setIsCancelling(false);
+            }
         }
     }
     const handleAceept = async () => {
@@ -55,7 +64,7 @@ const AppointmentTable = ({
             </div>
             <p className="text-gray-600 text-center">{age}</p>
             <p className="text-gray-600 text-center">{date}</p>
-            <p className="text-gray-800 font-medium text-center">{fee}</p>
+            <p className="text-gray-800 font-medium text-center">${fee}</p>
             {
                 doctor
                 &&

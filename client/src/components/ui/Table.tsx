@@ -1,6 +1,7 @@
 import { XIcon, CheckIcon } from "lucide-react";
 import useDoctorStore from "../../store/DoctorStore";
 import { useState } from "react";
+import useAdminStore from "../../store/AdminStore";
 const Table = ({
     appointmentId,
     image,
@@ -17,6 +18,7 @@ const Table = ({
     isAdminPage: boolean
 }) => {
     const { doctorCancelAppointment, doctorAcceptAppointment } = useDoctorStore();
+    const { adminCancelAppointment } = useAdminStore();
     const [isCancelling, setIsCancelling] = useState(false);
     const [isAccepting, setIsAccepting] = useState(false);
     const handleCancel = async () => {
@@ -30,7 +32,14 @@ const Table = ({
                 setIsCancelling(false);
             }
         } else {
-
+            setIsCancelling(true);
+            try {
+                await adminCancelAppointment(appointmentId);
+            } catch (error) {
+                console.log(error instanceof Error ? error.message : error);
+            } finally {
+                setIsCancelling(false);
+            }
         }
     }
     const handleCAceept = async () => {

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import BookAppointment from "../../components/BookAppointment";
 import Card from "../../components/ui/Card";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import useScreenStore from "../../store/ScreenStore";
 import toast from "react-hot-toast";
@@ -9,8 +9,10 @@ import LoaderMainScreen from "../../tools/LoaderMainScreen";
 const AppointmentPage = () => {
     const { id } = useParams();
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingRelated, setIsLoadingRelated] = useState(false);
     const { relatedDoctors, getRelatedDoctors, getDoctor, doctor } = useScreenStore();
     const navigate = useNavigate();
+    const hasLoadedRelated = useRef(false);
     if (!id) {
         navigate('/ErrorNotFound');
         return null;
@@ -20,9 +22,6 @@ const AppointmentPage = () => {
             setIsLoading(true);
             try {
                 await getDoctor(id);
-                if (doctor?.speciality) {
-                    await getRelatedDoctors(doctor.speciality, doctor.name);
-                }
             } catch (error: unknown) {
                 toast.error(error instanceof Error ? error.message : String(error));
             } finally {
@@ -31,6 +30,22 @@ const AppointmentPage = () => {
         };
         handleData();
     }, [id]);
+    useEffect(() => {
+        if (doctor?.speciality && doctor?.name && !hasLoadedRelated.current) {
+            const loadRelatedDoctors = async () => {
+                setIsLoadingRelated(true);
+                try {
+                    await getRelatedDoctors(doctor.speciality, doctor.name);
+                    hasLoadedRelated.current = true; // Mark as loaded
+                } catch (error: unknown) {
+                    console.error("Failed to load related doctors:", error);
+                } finally {
+                    setIsLoadingRelated(false);
+                }
+            };
+            loadRelatedDoctors();
+        }
+    }, [doctor?.speciality, doctor?.name, getRelatedDoctors]);
     if (isLoading) {
         return <LoaderMainScreen />;
     }
@@ -58,7 +73,9 @@ const AppointmentPage = () => {
                     Simply browse through our extensive list of trusted doctors.
                 </p>
                 <div className="grid md:grid-cols-4 gap-4 grid-cols-2">
-                    {relatedDoctors.length > 0 ? (
+                    {isLoadingRelated ? (
+                        <p className="col-span-full text-center">Loading related doctors...</p>
+                    ) : relatedDoctors.length > 0 ? (
                         relatedDoctors.map((doctor, index) => (
                             <Card
                                 id={doctor?._id}

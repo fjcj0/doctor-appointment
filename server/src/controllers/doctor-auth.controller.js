@@ -59,6 +59,8 @@ export const createDoctorAccount = async (request, response) => {
             about
         });
         await doctor.save();
+        removeCache('doctors');
+        removeCache(`related_doctors_${doctor.speciality}`);
         return response.status(201).json({
             success: true,
             message: 'Doctor created successfully',

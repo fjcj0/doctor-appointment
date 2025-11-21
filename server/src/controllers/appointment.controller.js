@@ -26,6 +26,12 @@ export const createAppointment = async (request, response) => {
                 error: 'Doctor not found'
             });
         }
+        if (!doctor.available) {
+            return response.status(404).json({
+                success: false,
+                error: 'Doctor not available'
+            });
+        }
         const curAppointment = await Appointment.findOne({
             doctorId: doctorId,
             userId: request.userId,
@@ -34,12 +40,32 @@ export const createAppointment = async (request, response) => {
         if (curAppointment) {
             return response.status(400).json({
                 success: false,
-                error: `Cannot create appointment. You already have a ${curAppointment.status} appointment with this doctor.`
+                error: `Cannot create appointment You already have a ${curAppointment.status} appointment with this doctor.`
             });
         }
+        const datedAppointemt = await Appointment.findOne({
+            date,
+            userId: request.userId,
+            status: { $in: ['pending'] }
+        });
+        if (datedAppointemt) return response.status(400).json({
+            success: false,
+            error: `Cannot create appointment You already have a date appointment with another doctor with same date`
+        });
+        const isAppointmentReversed = await Appointment.findOne({
+            date,
+            status: { $in: ['pending'] },
+            doctorId
+        });
+        if (isAppointmentReversed) return response.status(400).json({
+            success: false,
+            error: `Cannot create appointment this time is reversed try another time`
+        });
         await removeCache(`appointments-user-${request.userId}`);
         await removeCache(`appointments-doctors-${doctorId}`);
         await removeCache(`latest-appointments-doctors-${doctorId}`);
+        await removeCache('latest-appointments-admin');
+        await removeCache('all-appointments-admin');
         const appointment = new Appointment({
             doctorId,
             userId: request.userId,
@@ -107,6 +133,8 @@ export const userCancelAppointment = async (request, response) => {
         await removeCache(`appointments-user-${request.userId}`);
         await removeCache(`appointments-doctors-${appointment.doctorId}`);
         await removeCache(`latest-appointments-doctors-${appointment.doctorId}`);
+        await removeCache('latest-appointments-admin');
+        await removeCache('all-appointments-admin');
         return response.status(200).json({
             success: true,
             message: 'Appointment cancelled successfully!!',
@@ -251,7 +279,7 @@ export const totalPatientsForDoctor = async (request, response) => {
                 error: 'Access denied. Doctors only.'
             });
         }
-        const totalPatientsForDoctor = await Appointment.distinct('userId', {
+        const totalPatientsForDoctor = await Appointment.find({
             doctorId: request.doctorId,
             status: { $in: ['pending'] }
         });
@@ -320,8 +348,6 @@ export const doctorAppointments = async (request, response) => {
                 .sort({ createdAt: -1 })
                 .lean();
             cache.set(cacheKey, doctorAppointments, 300);
-        } else {
-            console.log('Data retrieved from cache:', doctorAppointments);
         }
         return response.status(200).json({
             success: true,
@@ -388,6 +414,8 @@ export const doctorAcceptAppointment = async (request, response) => {
         await removeCache(`appointments-user-${appointment.userId}`);
         await removeCache(`appointments-doctors-${request.doctorId}`);
         await removeCache(`latest-appointments-doctors-${request.doctorId}`);
+        await removeCache('latest-appointments-admin');
+        await removeCache('all-appointments-admin');
         return response.status(200).json({
             success: true,
             message: 'Appointment accepted successfully',
@@ -443,6 +471,8 @@ export const doctorCancelAppointment = async (request, response) => {
         await removeCache(`appointments-user-${appointment.userId}`);
         await removeCache(`appointments-doctors-${request.doctorId}`);
         await removeCache(`latest-appointments-doctors-${request.doctorId}`);
+        await removeCache('latest-appointments-admin');
+        await removeCache('all-appointments-admin');
         return response.status(200).json({
             success: true,
             message: 'Appointment has been cancelled successfully',
@@ -537,7 +567,9 @@ export const totalPatients = async (request, response) => {
                 error: 'Access denied. Admins only.'
             });
         }
-        const totalAllPatients = await Appointment.distinct('userId');
+        const totalAllPatients = await Appointment.find({
+            status: { $in: ['pending'] }
+        });
         return response.status(200).json({
             success: true,
             totalAllPatients: totalAllPatients.length
@@ -658,11 +690,11 @@ export const cancelAppointmentForDoctorAndUser = async (request, response) => {
         }
         appointment.status = 'cancelled';
         await appointment.save();
-        removeCache(`appointments-user-${appointment.userId}`);
-        removeCache(`appointments-doctors-${appointment.doctorId}`);
-        removeCache(`latest-appointments-doctors-${appointment.doctorId}`);
-        removeCache('latest-appointments-admin');
-        removeCache('all-appointments-admin');
+        await removeCache(`appointments-user-${appointment.userId}`);
+        await removeCache(`appointments-doctors-${appointment.doctorId}`);
+        await removeCache(`latest-appointments-doctors-${appointment.doctorId}`);
+        await removeCache('latest-appointments-admin');
+        await removeCache('all-appointments-admin');
         return response.status(200).json({
             success: true,
             message: 'Appointment cancelled successfully by admin',
@@ -694,6 +726,8 @@ export const changeAvailable = async (request, response) => {
         }
         doctor.available = !doctor.available;
         doctor.save();
+        await removeCache('doctors');
+        await removeCache(`related_doctors_${doctor.speciality}`);
         return response.status(200).json({
             success: false,
             message: `Doctor status changed to ${doctor.available}`
