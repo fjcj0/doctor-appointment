@@ -20,8 +20,9 @@ import mainRoute from './routes/main.route.js';
 import { botDetection } from "./utils/botDetection.js";
 import { limiter } from "./utils/rateLimit.js";
 import { speedLimiter } from "./utils/slowDownLimiter.js";
-import path from 'path';
 import { apiProtection } from "./utils/apiProtect.js";
+import { aj } from "./lib/aj.js";
+import path from 'path';
 const __dirname = path.resolve();
 const app = express();
 app.set('trust proxy', 1);
@@ -45,6 +46,31 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(morgan('dev'));
+app.use(async (req, res, next) => {
+    try {
+        const decision = await aj.protect(req, { requested: 1 });
+
+        if (decision.isDenied()) {
+            if (decision.reason.isRateLimit()) {
+                return res.status(429).json({ error: 'Rate limit exceeded, Too many requests!' });
+            } else if (decision.reason.isBot()) {
+                return res.status(403).json({ error: 'Bot access denied!' });
+            } else {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+        }
+
+        if (decision.results.some(result => result.reason.isBot() && result.reason.isSpoofed())) {
+            return res.status(403).json({ error: 'Spoofed bot detected!' });
+        }
+
+        next();
+    } catch (error) {
+        console.error(error.message);
+        next(error);
+    }
+});
+/*
 const needsProtection = (req) => {
     const protectedPaths = [
         '/api/',
@@ -110,6 +136,7 @@ app.get('/cron', (request, response) => {
         message: 'Server connected successfully!!'
     });
 });
+*/
 app.post('/upload-image', upload.single('image'), uploadImage);
 app.use('/api/user-auth', authRoute);
 app.use('/api/admin-auth', adminRoute);
