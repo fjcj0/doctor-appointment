@@ -134,7 +134,7 @@ app.get('/cron', (request, response) => {
     });
 });
 */
-app.get('/', async (request, response) => {
+app.get('/cron', async (request, response) => {
     try {
         return response.status(200).json({
             message: `Message connected sucessfully to server`
