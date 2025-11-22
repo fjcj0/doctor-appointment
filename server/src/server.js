@@ -32,7 +32,7 @@ app.use(express.json());
 app.use(cors({
     origin: process.env.NODE_ENV === 'development'
         ? ['http://localhost:5173']
-        : ['https://doctor-appointment-hsbv.onrender.com'],
+        : ['https://doctor-appointment-c217.onrender.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cookie', 'Accept'],
