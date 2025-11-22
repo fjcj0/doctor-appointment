@@ -3,7 +3,7 @@ import type { ScreenStoreProps } from '../global';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 axios.defaults.withCredentials = true;
-const baseUrl = import.meta.env.NODE_ENV === 'development'
+const baseUrl = import.meta.env.MODE === 'development'
     ? 'http://localhost:2340'
     : 'https://doctor-appointment-hsbv.onrender.com';
 const useScreenStore = create<ScreenStoreProps>((set) => ({
