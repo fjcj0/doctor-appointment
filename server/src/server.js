@@ -23,7 +23,7 @@ import path from 'path';
 const __dirname = path.resolve();
 const app = express();
 app.set('trust proxy', 1);
-app.use(cookieParser());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 if (process.env.NODE_ENV !== 'development') job.start();
 app.use(express.json());
 app.use(cors({
@@ -32,10 +32,15 @@ app.use(cors({
         : ['https://doctor-appointment-hsbv.onrender.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cookie', 'Accept'],
+    exposedHeaders: ['Set-Cookie'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }));
 app.use(helmet({
     contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(morgan('dev'));
 const needsProtection = (req) => {

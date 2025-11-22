@@ -10,14 +10,29 @@ const suspiciousKeywords = [
 ];
 export const botDetection = async (request, response, next) => {
     try {
+        if (request.method === 'OPTIONS') {
+            return next();
+        }
         const uaString = request.headers['user-agent'] || '';
+        if (!uaString) {
+            return next();
+        }
         const parser = new UAParser.UAParser(uaString);
         const ua = parser.getResult();
         const browser = ua.browser.name || "Unknown";
         const engine = ua.engine.name || "";
-        const isAllowedBrowser = allowedBrowsers.includes(browser) ||
-            allowedMobileBrowsers.includes(browser);
+        const extendedAllowedBrowsers = [
+            ...allowedBrowsers,
+            'Chromium', 'Brave', 'Vivaldi', 'Samsung Browser'
+        ];
+        const extendedAllowedMobileBrowsers = [
+            ...allowedMobileBrowsers,
+            'Mobile Brave', 'Mobile Samsung'
+        ];
+        const isAllowedBrowser = extendedAllowedBrowsers.includes(browser) ||
+            extendedAllowedMobileBrowsers.includes(browser);
         if (!isAllowedBrowser) {
+            console.log(`Blocked browser: ${browser}`);
             return response.status(403).json({
                 error: `Access denied: Unsupported browser - ${browser}`
             });
@@ -29,6 +44,7 @@ export const botDetection = async (request, response, next) => {
             });
         }
         if (!engine || engine === '') {
+            console.log('Suspicious engine detected');
             return response.status(403).json({
                 error: 'Suspicious browser engine detected'
             });
