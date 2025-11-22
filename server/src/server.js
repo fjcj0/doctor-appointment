@@ -49,7 +49,6 @@ app.use(morgan('dev'));
 app.use(async (req, res, next) => {
     try {
         const decision = await aj.protect(req, { requested: 1 });
-
         if (decision.isDenied()) {
             if (decision.reason.isRateLimit()) {
                 return res.status(429).json({ error: 'Rate limit exceeded, Too many requests!' });
@@ -59,14 +58,12 @@ app.use(async (req, res, next) => {
                 return res.status(403).json({ error: 'Forbidden' });
             }
         }
-
         if (decision.results.some(result => result.reason.isBot() && result.reason.isSpoofed())) {
             return res.status(403).json({ error: 'Spoofed bot detected!' });
         }
-
         next();
     } catch (error) {
-        console.error(error.message);
+        console.log(error.message);
         next(error);
     }
 });
@@ -137,6 +134,18 @@ app.get('/cron', (request, response) => {
     });
 });
 */
+app.get('/', async (request, response) => {
+    try {
+        return response.status(200).json({
+            message: `Message connected sucessfully to server`
+        });
+    } catch (error) {
+        console.log(error instanceof Error ? error.message : error);
+        return response.status(500).json({
+            error: `Internal Server Error: ${error instanceof Error ? error.message : error}`
+        });
+    }
+});
 app.post('/upload-image', upload.single('image'), uploadImage);
 app.use('/api/user-auth', authRoute);
 app.use('/api/admin-auth', adminRoute);
