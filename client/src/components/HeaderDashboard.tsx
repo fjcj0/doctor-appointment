@@ -1,4 +1,5 @@
 import { filterIcon, logo } from "../constants/data";
+import useAdminStore from "../store/AdminStore";
 import useDoctorStore from "../store/DoctorStore";
 import useSlideStore from "../store/SlideStore";
 const HeaderDashboard = ({ typeHeader }: {
@@ -6,6 +7,7 @@ const HeaderDashboard = ({ typeHeader }: {
 }) => {
     const { toggleSlide } = useSlideStore();
     const { logoutDoctor } = useDoctorStore();
+    const { logoutAdmin } = useAdminStore();
     const handleLogout = async () => {
         if (typeHeader === 'doctor') {
             try {
@@ -14,7 +16,11 @@ const HeaderDashboard = ({ typeHeader }: {
                 console.log(error instanceof Error ? error.message : error);
             }
         } else {
-
+            try {
+                await logoutAdmin();
+            } catch (error) {
+                console.log(error instanceof Error ? error.message : error);
+            }
         }
     }
     return (

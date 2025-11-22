@@ -60,11 +60,11 @@ const DashboardDoctorPage = () => {
                         {doctorAppointmentsLimited.map((booking, index) => (
                             <Table
                                 key={index}
-                                appointmentId={booking._id}
-                                name={booking.userId.name}
-                                date={booking.date}
-                                image={booking.userId.profilePicture}
-                                status={booking.status}
+                                appointmentId={booking?._id}
+                                name={booking.userId?.name}
+                                date={booking?.date}
+                                image={booking.userId?.profilePicture}
+                                status={booking?.status}
                                 isAdminPage={false}
                             />
                         ))}

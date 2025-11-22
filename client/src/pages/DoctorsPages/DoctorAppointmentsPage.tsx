@@ -35,14 +35,14 @@ const DoctorAppointmentsPage = () => {
                         {doctorAppointments.map((appointment, index) => (
                             <AppointmentTable
                                 key={index}
-                                patient={appointment.userId.name}
-                                image={appointment.userId.profilePicture}
-                                payment={appointment.payment}
-                                age={calculateAge(appointment.userId.birthday)}
-                                fee={appointment.fees}
-                                status={appointment.status}
-                                date={appointment.date}
-                                appointmentId={appointment._id}
+                                patient={appointment.userId?.name}
+                                image={appointment.userId?.profilePicture}
+                                payment={appointment?.payment}
+                                age={calculateAge(appointment.userId?.birthday)}
+                                fee={appointment?.fees}
+                                status={appointment?.status}
+                                date={appointment?.date}
+                                appointmentId={appointment?._id}
                                 isAdmin={false}
                             />
                         ))}

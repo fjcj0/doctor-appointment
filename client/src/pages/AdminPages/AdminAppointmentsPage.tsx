@@ -30,16 +30,16 @@ const AdminAppointmentsPage = () => {
                         {adminAppointments.map((appointment, index) => (
                             <AppointmentTable
                                 key={index}
-                                appointmentId={appointment._id}
-                                patient={appointment.userId.name}
-                                image={appointment.userId.profilePicture}
+                                appointmentId={appointment?._id}
+                                patient={appointment.userId?.name}
+                                image={appointment.userId?.profilePicture}
                                 payment={appointment.payment}
-                                age={calculateAge(appointment.userId.birthday)}
-                                fee={appointment.fees}
-                                status={appointment.status}
-                                date={appointment.date}
-                                doctor={appointment.doctorId.name}
-                                doctorImage={appointment.doctorId.profilePicture}
+                                age={calculateAge(appointment.userId?.birthday)}
+                                fee={appointment?.fees}
+                                status={appointment?.status}
+                                date={appointment?.date}
+                                doctor={appointment.doctorId?.name}
+                                doctorImage={appointment.doctorId?.profilePicture}
                                 isAdmin={true}
                             />
                         ))}

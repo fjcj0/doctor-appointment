@@ -26,7 +26,6 @@ const DashboardAdminPage = () => {
     if (isLoading) {
         return <LoaderDashboard />;
     }
-    console.log(adminAppointmentsLimited);
     return (
         <div className="p-5">
             <div className="grid max-w-3xl grid-cols-1 md:grid-cols-3 gap-3">
@@ -64,12 +63,12 @@ const DashboardAdminPage = () => {
                         {adminAppointmentsLimited.map((booking, index) => (
                             <Table
                                 key={index}
-                                appointmentId={booking._id}
-                                name={booking.userId.name}
-                                date={booking.date}
-                                image={booking.userId.profilePicture}
+                                appointmentId={booking?._id}
+                                name={booking.userId?.name}
+                                date={booking?.date}
+                                image={booking.userId?.profilePicture}
                                 isAdminPage={true}
-                                status={booking.status}
+                                status={booking?.status}
                             />
                         ))}
                     </div>
