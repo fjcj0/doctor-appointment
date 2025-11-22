@@ -5,7 +5,7 @@ import type { DoctorStoreProps } from '../global';
 axios.defaults.withCredentials = true;
 const baseUrl = import.meta.env.MODE === 'development'
     ? 'http://localhost:2340'
-    : 'https://doctor-appointment-hsbv.onrender.com';
+    : 'https://doctor-appointment-c217.onrender.com';
 const useDoctorStore = create<DoctorStoreProps>((set, get) => ({
     isDoctorVerified: false,
     isCheckingDoctorVerify: true,

@@ -3,7 +3,7 @@ axios.defaults.withCredentials = true;
 import toast from "react-hot-toast";
 const baseUrl = import.meta.env.MODE === 'development'
     ? 'http://localhost:2340'
-    : 'https://doctor-appointment-hsbv.onrender.com';
+    : 'https://doctor-appointment-c217.onrender.com';
 export const uploadImage = async (image: File): Promise<void | string> => {
     try {
         const formData = new FormData();

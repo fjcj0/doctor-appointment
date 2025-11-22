@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 axios.defaults.withCredentials = true;
 const baseUrl = import.meta.env.MODE === 'development'
     ? 'http://localhost:2340'
-    : 'https://doctor-appointment-hsbv.onrender.com';
+    : 'https://doctor-appointment-c217.onrender.com';
 const useScreenStore = create<ScreenStoreProps>((set) => ({
     doctor: null,
     relatedDoctors: [],
