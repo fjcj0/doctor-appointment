@@ -19,7 +19,9 @@ import upload from "./config/multer.js";
 import mainRoute from './routes/main.route.js';
 import { botDetection } from "./utils/botDetection.js";
 import { limiter } from "./utils/rateLimit.js";
+import { speedLimiter } from "./utils/slowDownLimiter.js";
 import path from 'path';
+import { apiProtection } from "./utils/apiProtect.js";
 const __dirname = path.resolve();
 const app = express();
 app.set('trust proxy', 1);
@@ -75,16 +77,30 @@ const needsProtection = (req) => {
     ];
     return protectedPaths.some(path => req.path.startsWith(path));
 };
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
     if (needsProtection(req)) {
         botDetection(req, res, next);
     } else {
         next();
     }
 });
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
     if (needsProtection(req)) {
         limiter(req, res, next);
+    } else {
+        next();
+    }
+});
+app.use(async (req, res, next) => {
+    if (needsProtection(req)) {
+        speedLimiter(req, res, next);
+    } else {
+        next();
+    }
+});
+app.use(async (req, res, next) => {
+    if (needsProtection(req)) {
+        apiProtection(req, res, next);
     } else {
         next();
     }
